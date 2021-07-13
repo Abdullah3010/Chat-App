@@ -109,7 +109,10 @@ showMyDialog(
           fontSize: 24,
           fontWeight: FontWeight.bold,
         ),
-        content: Text(content),
+        content: Container(
+          child: Text(content),
+          width: 400,
+        ),
         elevation: 20,
         buttonPadding: EdgeInsets.all(20),
         actionsPadding: EdgeInsets.zero,

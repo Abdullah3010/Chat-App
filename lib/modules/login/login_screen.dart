@@ -1,7 +1,7 @@
+import 'package:chat/layout/register.dart';
 import 'package:chat/modules/chat/chat_screen.dart';
 import 'package:chat/modules/login/cubit/cubit.dart';
 import 'package:chat/modules/login/cubit/states.dart';
-import 'package:chat/modules/register/register_screen.dart';
 import 'package:chat/shared/constant/component.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,7 +18,7 @@ class LoginScreen extends StatelessWidget {
       child: BlocConsumer<LoginCubit, LoginStates>(
         listener: (context, state) {
           if (state is LoginSuccessesState) {
-            navigate(context, ChatScreen());
+            navigateAndFinish(context, ChatScreen());
           }
           if (state is LoginErrorState) {
             showMyDialog(
@@ -42,7 +42,7 @@ class LoginScreen extends StatelessWidget {
                     width: 130,
                     onPressed: () {
                       Navigator.pop(context);
-                      navigate(context, RegisterScreen());
+                      navigate(context, Register());
                     },
                   ),
               ],
@@ -163,7 +163,7 @@ class LoginScreen extends StatelessWidget {
                             Spacer(),
                             TextButton(
                               onPressed: () {
-                                navigate(context, RegisterScreen());
+                                navigateAndFinish(context, Register());
                               },
                               child: Text(
                                 'Register',
