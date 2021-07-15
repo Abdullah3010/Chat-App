@@ -53,7 +53,7 @@ class LoginScreen extends StatelessWidget {
           cubit = LoginCubit.get(context);
           return Center(
             child: Padding(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20),
               child: SingleChildScrollView(
                 child: Form(
                   key: formKey,

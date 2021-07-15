@@ -58,7 +58,9 @@ Widget defaultButton({
   Color background = Colors.blue,
   Color textColor = Colors.white,
   bool isUpperCase = true,
+  bool addIcon = false,
   double radius = 5,
+  IconData? icon,
 }) =>
     Container(
       width: width,
@@ -67,13 +69,27 @@ Widget defaultButton({
         onPressed: () {
           onPressed();
         },
-        child: Text(
-          isUpperCase ? text.toUpperCase() : text,
-          style: TextStyle(
-            color: textColor,
-            fontWeight: FontWeight.bold,
-            fontSize: 22,
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (addIcon)
+              Padding(
+                padding: EdgeInsets.only(right: 5),
+                child: Icon(
+                  icon,
+                  size: 30,
+                  color: textColor,
+                ),
+              ),
+            Text(
+              isUpperCase ? text.toUpperCase() : text,
+              style: TextStyle(
+                color: textColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 22,
+              ),
+            ),
+          ],
         ),
       ),
       decoration: BoxDecoration(

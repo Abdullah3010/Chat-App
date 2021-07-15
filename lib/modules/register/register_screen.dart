@@ -2,6 +2,7 @@ import 'package:chat/layout/login.dart';
 import 'package:chat/modules/chat/chat_screen.dart';
 import 'package:chat/modules/register/cubit/cubit.dart';
 import 'package:chat/modules/register/cubit/states.dart';
+import 'package:chat/modules/register/pick-user-image.dart';
 import 'package:chat/shared/constant/component.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,7 +21,7 @@ class RegisterScreen extends StatelessWidget {
       child: BlocConsumer<RegisterCubit, RegisterStates>(
         listener: (context, state) {
           if (state is NextPageSuccessesState) {
-            navigate(context, ChatScreen());
+            navigateAndFinish(context, PickUserImage());
           }
           if (state is NextPageErrorState) {
             showMyDialog(
@@ -163,7 +164,13 @@ class RegisterScreen extends StatelessWidget {
                           text: 'next',
                           width: double.infinity,
                           onPressed: () {
-                            if (formKey.currentState!.validate()) {}
+                            if (formKey.currentState!.validate()) {
+                              cubit.nextPage(
+                                username: usernameController.text,
+                                email: emailController.text,
+                                password: passwordController.text,
+                              );
+                            }
                           },
                         ),
                       Padding(
