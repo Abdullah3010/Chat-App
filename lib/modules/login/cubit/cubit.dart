@@ -1,5 +1,9 @@
 import 'package:bloc/bloc.dart';
+import 'package:chat/models/user.dart';
 import 'package:chat/modules/login/cubit/states.dart';
+import 'package:chat/shared/constant/constants.dart';
+import 'package:chat/shared/network/local/local-db.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,6 +33,7 @@ class LoginCubit extends Cubit<LoginStates> {
     emit(ChangeFocusNodeState());
   }
 
+  late String id;
   void login({
     required String email,
     required String password,
@@ -40,7 +45,25 @@ class LoginCubit extends Cubit<LoginStates> {
       password: password,
     )
         .then((value) {
-      emit(LoginSuccessesState());
+      id = value.user!.uid;
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc('${value.user!.uid}')
+          .get()
+          .then((value) {
+        ME = NewUser.fromJson(value.data()!);
+        ME.uId = id;
+        LocalData.putData(
+          key: 'uid',
+          value: id,
+        ).then((value) {
+          emit(LoginSuccessesState());
+        }).catchError((_) {
+          emit(LoginErrorState());
+        });
+      }).catchError((error) {
+        emit(LoginErrorState());
+      });
     }).catchError((error) {
       errorMessageIndex = errorName(error.toString());
       print(errorMessageIndex);

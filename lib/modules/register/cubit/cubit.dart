@@ -4,6 +4,8 @@ import 'package:bloc/bloc.dart';
 import 'package:chat/models/user.dart';
 import 'package:chat/modules/register/cubit/states.dart';
 import 'package:chat/shared/constant/constants.dart';
+import 'package:chat/shared/network/local/local-db.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,10 +26,6 @@ class RegisterCubit extends Cubit<RegisterStates> {
     'The account already exists for that email.',
     'Something wrong'
   ];
-  String? imageUrl = 'https://firebasestorage.googleapis.com/'
-      'v0/b/test-project-eeb99.appspot.com/o/user_image%2Ftest%'
-      '2Fimage_picker127597264248855870.jpg'
-      '?alt=media&token=7e20acfe-a7c7-489e-991b-f8340faa7008';
   File? image;
   ImagePicker picker = ImagePicker();
 
@@ -64,7 +62,14 @@ class RegisterCubit extends Cubit<RegisterStates> {
         password: password,
         uId: value.user!.uid,
       );
-      emit(NextPageSuccessesState());
+      LocalData.putData(
+        key: 'uid',
+        value: value.user!.uid,
+      ).then((value) {
+        emit(NextPageSuccessesState());
+      }).catchError((_) {
+        emit(NextPageErrorState());
+      });
     }).catchError((error) {
       if (error is FirebaseAuthException) {
         errorMessageIndex = errorName(error.code);
@@ -93,41 +98,49 @@ class RegisterCubit extends Cubit<RegisterStates> {
     );
   }
 
-  getImageFromGallery() {
+  Future<void> getImageFromGallery() async {
     emit(ImageSelectionLoadingState());
-    final pickedFile = picker
+    final pickedFile = await picker
         .getImage(
       source: ImageSource.gallery,
     )
         .then((value) {
       image = File(value!.path);
-      print('1 => ${value.path}');
-      print('2 => ${image!.path}');
-      uploadImage(Uri.file(image!.path).pathSegments.last).then((value) {
-        emit(ImageSelectionSuccessesState());
-      }).catchError((error) {
-        emit(ImageSelectionErrorState());
-      });
-      print('4 = > $imageUrl');
-      print('5 = >${ME.toMap()}');
+      uploadImage(Uri.file(image!.path).pathSegments.last);
     }).catchError((error) {
       emit(ImageSelectionErrorState());
     });
+    emit(ImageSelectionSuccessesState());
   }
 
-  uploadImage(String? path) {
-    firebase_storage.FirebaseStorage.instance
+  Future<void> getImageFromCamera() async {
+    emit(ImageSelectionLoadingState());
+    final pickedFile = await picker
+        .getImage(
+      source: ImageSource.camera,
+    )
+        .then((value) {
+      image = File(value!.path);
+      uploadImage(Uri.file(image!.path).pathSegments.last);
+    }).catchError((error) {
+      emit(ImageSelectionErrorState());
+    });
+    emit(ImageSelectionSuccessesState());
+  }
+
+  Future<void> uploadImage(String? path) async {
+    await firebase_storage.FirebaseStorage.instance
         .ref()
-        .child('user_image/test/$path')
+        .child('user_image/$path')
         .putFile(image!)
         .then((value) {
       value.ref.getDownloadURL().then((url) {
-        print('3 => $url');
-        imageUrl = url;
         ME.imageUrl = url;
-        print('4 = > $imageUrl');
-        print('5 = >${ME.toMap()}');
+      }).catchError((error) {
+        emit(ImageSelectionErrorState());
       });
+    }).catchError((error) {
+      emit(ImageSelectionErrorState());
     });
   }
 
@@ -142,26 +155,18 @@ class RegisterCubit extends Cubit<RegisterStates> {
       password: password,
     )
         .then((value) {
-      emit(LoginSuccessesState());
+      value.user!.sendEmailVerification();
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc('${ME.uId}')
+          .set(ME.toMap())
+          .then((value) {
+        emit(LoginSuccessesState());
+      }).catchError((error) {
+        emit(LoginErrorState());
+      });
     }).catchError((error) {
       emit(LoginErrorState());
     });
   }
 }
-
-// Future<void> getImageFromCamera() async {
-//   emit(ImageSelectionLoadingState());
-//   final pickedFile = await picker.getImage(source: ImageSource.camera);
-//   if (pickedFile != null) {
-//     image = File(pickedFile.path);
-//     if (uploadImage(Uri.file(pickedFile.path).pathSegments.last))
-//       emit(ImageSelectionSuccessesState());
-//     else
-//       emit(ImageSelectionErrorState());
-//     print('1 => ${pickedFile.path}');
-//   } else {
-//     print('No image selected.');
-//     emit(ImageSelectionErrorState());
-//   }
-//   print(ME.toMap());
-// }

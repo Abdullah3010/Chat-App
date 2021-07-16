@@ -17,8 +17,7 @@ class NewUser {
     username = json['username'];
     email = json['email'];
     password = json['password'];
-    imageUrl = json['imageUrl'];
-    uId = json['uId'];
+    imageUrl = json['image_url'];
   }
 
   Map<String, dynamic> toMap() {
@@ -26,7 +25,7 @@ class NewUser {
       'username': username,
       'email': email,
       'password': password,
-      'imageUrl': imageUrl,
+      'image_url': imageUrl,
     };
   }
 }

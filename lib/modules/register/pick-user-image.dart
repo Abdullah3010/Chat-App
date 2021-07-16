@@ -1,28 +1,35 @@
+import 'package:chat/modules/chat/chat_screen.dart';
 import 'package:chat/modules/register/cubit/cubit.dart';
 import 'package:chat/modules/register/cubit/states.dart';
 import 'package:chat/shared/constant/component.dart';
+import 'package:chat/shared/constant/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PickUserImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    String? url = 'https://firebasestorage.googleapis.com/'
-        'v0/b/test-project-eeb99.appspot.com/o/user_image%2Ftest%'
-        '2Fimage_picker127597264248855870.jpg'
-        '?alt=media&token=7e20acfe-a7c7-489e-991b-f8340faa7008';
     late RegisterCubit cubit;
-
+    Widget? imageWidget;
     return Scaffold(
       appBar: AppBar(),
       body: BlocProvider(
           create: (context) => RegisterCubit(),
           child: BlocConsumer<RegisterCubit, RegisterStates>(
             listener: (context, state) {
-              if (state is ImageSelectionErrorState)
-                print('ImageSelectionErrorState');
+              if (state is ImageSelectionLoadingState)
+                imageWidget = CircleAvatar(
+                  radius: 130,
+                  child: CircularProgressIndicator(),
+                );
+
               if (state is ImageSelectionSuccessesState)
-                print('ImageSelectionSuccessesState');
+                imageWidget = CircleAvatar(
+                  backgroundImage: FileImage(
+                    cubit.image!,
+                  ),
+                  radius: 130,
+                );
 
               if (state is ImageSelectionErrorState)
                 showMyDialog(
@@ -42,10 +49,12 @@ class PickUserImage extends StatelessWidget {
                     ),
                   ],
                 );
+
+              if (state is LoginSuccessesState)
+                navigateAndFinish(context, ChatScreen());
             },
             builder: (context, state) {
-              print(state is ImageSelectionSuccessesState);
-              cubit = RegisterCubit();
+              cubit = RegisterCubit.get(context);
               return Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Container(
@@ -59,13 +68,8 @@ class PickUserImage extends StatelessWidget {
                         children: [
                           CircleAvatar(
                             radius: 140,
-                            child: url != null
-                                ? CircleAvatar(
-                                    backgroundImage: NetworkImage(
-                                      cubit.imageUrl!,
-                                    ),
-                                    radius: 130,
-                                  )
+                            child: cubit.image != null
+                                ? imageWidget
                                 : CircleAvatar(
                                     backgroundColor: Colors.white,
                                     radius: 130,
@@ -90,37 +94,37 @@ class PickUserImage extends StatelessWidget {
                                 ),
                               ),
                               onTap: () {
-                                // showMyDialog(
-                                //   context: context,
-                                //   title: 'Select image',
-                                //   content: 'Do you want to select from gallery '
-                                //       'or tack a new one from camera',
-                                //   actions: [
-                                //     defaultButton(
-                                //       text: 'Gallery',
-                                //       isUpperCase: false,
-                                //       addIcon: true,
-                                //       icon: Icons.image_outlined,
-                                //       width: 150,
-                                //       onPressed: () {
-                                //         Navigator.pop(context);
-                                //         cubit.getImageFromGallery();
-                                //       },
-                                //     ),
-                                //     Spacer(),
-                                //     defaultButton(
-                                //       text: 'Camera',
-                                //       isUpperCase: false,
-                                //       addIcon: true,
-                                //       icon: Icons.camera_alt_outlined,
-                                //       width: 150,
-                                //       onPressed: () {
-                                //         //cubit.getImageFromCamera();
-                                //       },
-                                //     ),
-                                //   ],
-                                // );
-                                cubit.getImageFromGallery();
+                                showMyDialog(
+                                  context: context,
+                                  title: 'Select image',
+                                  content: 'Do you want to select from gallery '
+                                      'or tack a new one from camera',
+                                  actions: [
+                                    defaultButton(
+                                      text: 'Gallery',
+                                      isUpperCase: false,
+                                      addIcon: true,
+                                      icon: Icons.image_outlined,
+                                      width: 150,
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        cubit.getImageFromGallery();
+                                      },
+                                    ),
+                                    Spacer(),
+                                    defaultButton(
+                                      text: 'Camera',
+                                      isUpperCase: false,
+                                      addIcon: true,
+                                      icon: Icons.camera_alt_outlined,
+                                      width: 150,
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        cubit.getImageFromCamera();
+                                      },
+                                    ),
+                                  ],
+                                );
                               },
                             ),
                           ),
@@ -129,19 +133,23 @@ class PickUserImage extends StatelessWidget {
                       SizedBox(
                         height: 60,
                       ),
-                      if (state is ImageSelectionLoadingState)
-                        Padding(
-                          padding: const EdgeInsets.all(7),
-                          child: Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        ),
-                      if (state is! ImageSelectionLoadingState)
-                        defaultButton(
-                          text: 'sign in',
-                          width: double.infinity,
-                          onPressed: () {},
-                        ),
+                      (state is LoginLoadingState)
+                          ? Padding(
+                              padding: const EdgeInsets.all(7),
+                              child: Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            )
+                          : defaultButton(
+                              text: 'sign in',
+                              width: double.infinity,
+                              onPressed: () {
+                                cubit.login(
+                                  email: ME.email!,
+                                  password: ME.password!,
+                                );
+                              },
+                            ),
                       SizedBox(
                         height: 70,
                       ),
