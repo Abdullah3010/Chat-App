@@ -35,6 +35,12 @@ class ChatScreen extends StatelessWidget {
                 return Divider();
               },
               itemBuilder: (context, index) {
+                bool state;
+                FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(snapshot.data!.docs[index].id)
+                    .get()
+                    .then((value) {});
                 return InkWell(
                   child: userData(
                     context: context,
@@ -128,54 +134,3 @@ class ChatScreen extends StatelessWidget {
     );
   }
 }
-
-// Row(
-// children: [
-// Stack(
-// alignment: Alignment.bottomRight,
-// children: [
-// CircleAvatar(
-// radius: 40,
-// child: CircleAvatar(
-// radius: 37,
-// backgroundImage: NetworkImage(
-// snapshot.data!.docs[index]['image_url'],
-// ),
-// ),
-// ),
-// if (snapshot.data!.docs[index]['state'].toLowerCase() ==
-// 'online')
-// CircleAvatar(
-// backgroundColor:
-// Theme.of(context).scaffoldBackgroundColor,
-// radius: 13,
-// child: CircleAvatar(
-// backgroundColor: Colors.greenAccent,
-// radius: 10,
-// ),
-// ),
-// ],
-// ),
-// SizedBox(
-// width: 10,
-// ),
-// Column(
-// children: [
-// Text(
-// snapshot.data!.docs[index]['username'],
-// style: Theme.of(context)
-// .textTheme
-//     .headline5!
-// .copyWith(fontWeight: FontWeight.bold),
-// ),
-// SizedBox(
-// height: 5,
-// ),
-// Text(
-// snapshot.data!.docs[index]['username'],
-// style: Theme.of(context).textTheme.headline6,
-// )
-// ],
-// )
-// ],
-// );
