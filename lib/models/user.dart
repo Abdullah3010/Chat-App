@@ -29,3 +29,37 @@ class NewUser {
     };
   }
 }
+
+class Friends {
+  String? username;
+  String? imageUrl;
+  String? uId;
+  String? lastMessage;
+  String? state = 'ss';
+
+  Friends(
+      {this.username,
+      this.imageUrl = 'null',
+      this.uId,
+      this.lastMessage,
+      this.state});
+
+  Friends.fromJson(
+    Map<String, dynamic> json,
+    String uid,
+  ) {
+    username = json['username'];
+    imageUrl = json['image_url'];
+    lastMessage = json['last_message'];
+    uId = uid;
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'username': username,
+      'image_url': imageUrl,
+      'state': state,
+      'uid': uId
+    };
+  }
+}

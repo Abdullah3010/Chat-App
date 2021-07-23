@@ -10,8 +10,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class UserChat extends StatelessWidget {
   final String receiverId;
+  final ChatCubit cubit;
 
-  UserChat(this.receiverId);
+  UserChat(this.receiverId, this.cubit);
 
   @override
   Widget build(BuildContext context) {
@@ -24,37 +25,36 @@ class UserChat extends StatelessWidget {
           if (state is ChatErrorState) screen = ErrorScreen();
         },
         builder: (context, state) {
-          ChatCubit cubit = ChatCubit.get(context);
           if (state is ChatInitialState) {
-            cubit.getChatId(receiverId).then((value) {
-              print('hhh1');
-              print('12' + value);
-              screen = StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection('chat')
-                    .doc(value)
-                    .collection('messages')
-                    .snapshots(),
-                builder: (
-                  context,
-                  AsyncSnapshot<QuerySnapshot> snapshot,
-                ) {
-                  return ListView.separated(
-                    physics: BouncingScrollPhysics(),
-                    separatorBuilder: (context, index) => SizedBox(
-                      height: 7,
-                    ),
-                    itemBuilder: (context, index) {
-                      return buildMessage(
-                          context: context,
-                          isMe: true,
-                          message: snapshot.data!.docs[index]['text']);
-                    },
-                    itemCount: snapshot.data!.docs.length,
-                  );
-                },
-              );
-            });
+            // cubit.getChatId(receiverId).then((value) {
+            //   print('hhh1');
+            //   print('12' + value);
+            //   screen = StreamBuilder(
+            //     stream: FirebaseFirestore.instance
+            //         .collection('chat')
+            //         .doc(value)
+            //         .collection('messages')
+            //         .snapshots(),
+            //     builder: (
+            //       context,
+            //       AsyncSnapshot<QuerySnapshot> snapshot,
+            //     ) {
+            //       return ListView.separated(
+            //         physics: BouncingScrollPhysics(),
+            //         separatorBuilder: (context, index) => SizedBox(
+            //           height: 7,
+            //         ),
+            //         itemBuilder: (context, index) {
+            //           return buildMessage(
+            //               context: context,
+            //               isMe: true,
+            //               message: snapshot.data!.docs[index]['text']);
+            //         },
+            //         itemCount: snapshot.data!.docs.length,
+            //       );
+            //     },
+            //   );
+            // });
           }
 
           return Scaffold(
