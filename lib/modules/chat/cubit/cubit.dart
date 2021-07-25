@@ -2,7 +2,9 @@ import 'package:bloc/bloc.dart';
 import 'package:chat/models/message.dart';
 import 'package:chat/models/user.dart';
 import 'package:chat/modules/chat/chat_screen.dart';
+import 'package:chat/modules/chat/chats.dart';
 import 'package:chat/modules/chat/cubit/states.dart';
+import 'package:chat/modules/coming_soon/coming_soon_screen.dart';
 import 'package:chat/modules/friends/add_friend_screen.dart';
 import 'package:chat/modules/profile/profile_screen.dart';
 import 'package:chat/shared/constant/constants.dart';
@@ -112,7 +114,7 @@ class ChatCubit extends Cubit<ChatStates> {
   }
 
   int currentIndex = 1;
-  List<Widget> screens = [AddFriend(), ChatScreen(), Profile()];
+  List<Widget> screens = [AddFriend(), Chats(), Profile(), ComingSoon()];
   void changeScreen(int index) {
     currentIndex = index;
     emit(ChangeScreenState());

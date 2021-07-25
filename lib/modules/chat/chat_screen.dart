@@ -2,10 +2,6 @@ import 'package:chat/modules/chat/cubit/cubit.dart';
 import 'package:chat/modules/chat/cubit/states.dart';
 import 'package:chat/modules/chat/user_chat.dart';
 import 'package:chat/shared/constant/component.dart';
-import 'package:chat/shared/constant/constants.dart';
-import 'package:chat/shared/constant/error_screen.dart';
-import 'package:chat/shared/constant/loading_screen.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -28,17 +24,11 @@ class ChatScreen extends StatelessWidget {
           return Scaffold(
             appBar: AppBar(),
             body: cubit.screens[cubit.currentIndex],
-            // floatingActionButton: FloatingActionButton(
-            //   onPressed: () {
-            //     FirebaseAuth.instance.signOut();
-            //     LocalData.clear();
-            //   },
-            // ),
             bottomNavigationBar: BottomNavigationBar(
               items: [
                 BottomNavigationBarItem(
                   icon: Icon(
-                    Icons.message,
+                    Icons.person_add_alt_1,
                   ),
                   label: 'Add Friend',
                 ),
@@ -50,14 +40,20 @@ class ChatScreen extends StatelessWidget {
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(
-                    Icons.message,
+                    Icons.person_pin_rounded,
                   ),
                   label: 'Profile',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(
+                    Icons.person_pin_rounded,
+                  ),
+                  label: 'Coming soon',
                 ),
               ],
               showUnselectedLabels: true,
               elevation: 20,
-              currentIndex: 1,
+              currentIndex: cubit.currentIndex,
               iconSize: 40,
               selectedItemColor: Theme.of(context).primaryColor,
               unselectedItemColor: Colors.grey,
