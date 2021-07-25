@@ -1,8 +1,13 @@
 import 'package:bloc/bloc.dart';
+import 'package:chat/models/message.dart';
 import 'package:chat/models/user.dart';
+import 'package:chat/modules/chat/chat_screen.dart';
 import 'package:chat/modules/chat/cubit/states.dart';
+import 'package:chat/modules/friends/add_friend_screen.dart';
+import 'package:chat/modules/profile/profile_screen.dart';
 import 'package:chat/shared/constant/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ChatCubit extends Cubit<ChatStates> {
@@ -25,14 +30,20 @@ class ChatCubit extends Cubit<ChatStates> {
     });
   }
 
-  void getUsersState(List<QueryDocumentSnapshot<Object?>> users) {
-    users.forEach((user) {
-      FRIENDS.forEach((friend) {
-        if (user.id == friend.uId) {
+  List<String> states = [];
+
+  void getUsersState(
+    List<QueryDocumentSnapshot<Object?>> users,
+    List<QueryDocumentSnapshot<Object?>> friends,
+  ) {
+    states.clear();
+    friends.forEach((friend) {
+      users.forEach((user) {
+        if (user.id == friend.id) {
           if (user['state'].toString().toLowerCase() == 'online') {
-            friend.state = 'online';
+            states.add('online');
           } else {
-            friend.state = user['state'].toString().toLowerCase();
+            states.add(user['state'].toString().toLowerCase());
           }
         }
       });
@@ -54,5 +65,56 @@ class ChatCubit extends Cubit<ChatStates> {
         ));
       });
     });
+  }
+
+  void sendMessage({
+    required String message,
+    String type = 'text',
+    String image = '',
+    required String to,
+  }) {
+    Message m = Message(
+        message: message,
+        from: ME.uId,
+        to: to,
+        type: type,
+        image: image,
+        time: Timestamp.now());
+    emit(MessageSendLoadState());
+    FirebaseFirestore.instance
+        .collection('chat')
+        .doc('$chatId')
+        .collection('messages')
+        .add(m.toMap())
+        .then((value) {
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc('${ME.uId}')
+          .collection('friends')
+          .doc('$to')
+          .update({'last_message': message}).then((value) {
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc('$to')
+            .collection('friends')
+            .doc('${ME.uId}')
+            .update({'last_message': message}).then((value) {
+          emit(MessageSendSuccessState());
+        }).catchError((error) {
+          emit(MessageSendErrorState());
+        });
+      }).catchError((error) {
+        emit(MessageSendErrorState());
+      });
+    }).catchError((error) {
+      emit(MessageSendErrorState());
+    });
+  }
+
+  int currentIndex = 1;
+  List<Widget> screens = [AddFriend(), ChatScreen(), Profile()];
+  void changeScreen(int index) {
+    currentIndex = index;
+    emit(ChangeScreenState());
   }
 }

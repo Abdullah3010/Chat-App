@@ -35,7 +35,7 @@ class Friends {
   String? imageUrl;
   String? uId;
   String? lastMessage;
-  String? state = 'ss';
+  String? state;
 
   Friends(
       {this.username,
