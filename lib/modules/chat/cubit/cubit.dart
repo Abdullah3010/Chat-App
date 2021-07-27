@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:chat/models/message.dart';
 import 'package:chat/models/user.dart';
-import 'package:chat/modules/chat/chat_screen.dart';
 import 'package:chat/modules/chat/chats.dart';
 import 'package:chat/modules/chat/cubit/states.dart';
 import 'package:chat/modules/coming_soon/coming_soon_screen.dart';

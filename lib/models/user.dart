@@ -63,3 +63,28 @@ class Friends {
     };
   }
 }
+
+class Unfriends {
+  String? username;
+  String? imageUrl;
+  String? uId;
+
+  Unfriends({
+    this.username,
+    this.imageUrl = 'null',
+    this.uId,
+  });
+
+  Unfriends.fromJson(
+    Map<String, dynamic> json,
+    String uid,
+  ) {
+    username = json['username'];
+    imageUrl = json['image_url'];
+    uId = uid;
+  }
+
+  Map<String, dynamic> toMap() {
+    return {'username': username, 'image_url': imageUrl, 'uid': uId};
+  }
+}
