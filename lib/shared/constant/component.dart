@@ -52,15 +52,17 @@ Widget defaultFormField({
     );
 
 Widget defaultButton({
+  String text = '',
   required Function onPressed,
-  required String text,
   double width = double.infinity,
   Color background = Colors.blue,
   Color textColor = Colors.white,
+  Color iconColor = Colors.white,
   bool isUpperCase = true,
   bool addIcon = false,
   double radius = 5,
   IconData? icon,
+  double iconSize = 30,
 }) =>
     Container(
       width: width,
@@ -77,8 +79,8 @@ Widget defaultButton({
                 padding: EdgeInsets.only(right: 5),
                 child: Icon(
                   icon,
-                  size: 30,
-                  color: textColor,
+                  size: iconSize,
+                  color: iconColor,
                 ),
               ),
             Text(
@@ -111,11 +113,13 @@ void navigateAndFinish(context, screen) =>
       ),
     );
 
-showMyDialog(
-        {required BuildContext context,
-        required String title,
-        required String content,
-        required List<Widget> actions}) =>
+showMyDialog({
+  required BuildContext context,
+  required String title,
+  required String content,
+  required List<Widget> actions,
+  MainAxisAlignment actionAliment = MainAxisAlignment.start,
+}) =>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -134,6 +138,7 @@ showMyDialog(
         actionsPadding: EdgeInsets.zero,
         actions: [
           Row(
+            mainAxisAlignment: actionAliment,
             children: actions,
           )
         ],
