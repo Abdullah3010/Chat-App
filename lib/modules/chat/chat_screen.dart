@@ -22,7 +22,6 @@ class ChatScreen extends StatelessWidget {
         builder: (context, state) {
           cubit = ChatCubit.get(context);
           return Scaffold(
-            appBar: AppBar(),
             body: cubit.screens[cubit.currentIndex],
             bottomNavigationBar: BottomNavigationBar(
               items: [

@@ -1,6 +1,5 @@
 import 'package:chat/modules/chat/cubit/cubit.dart';
 import 'package:chat/modules/chat/cubit/states.dart';
-import 'package:chat/shared/constant/component.dart';
 import 'package:chat/shared/constant/constants.dart';
 import 'package:chat/shared/constant/error_screen.dart';
 import 'package:chat/shared/constant/loading_screen.dart';

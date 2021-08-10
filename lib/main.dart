@@ -8,7 +8,6 @@ import 'package:chat/shared/cubit/states.dart';
 import 'package:chat/shared/network/local/local-db.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() async {
@@ -47,10 +46,7 @@ class MyApp extends StatelessWidget {
               theme: ThemeData(
                 appBarTheme: AppBarTheme(
                   color: Colors.white,
-                  systemOverlayStyle: SystemUiOverlayStyle(
-                    statusBarColor: Colors.white,
-                  ),
-                  titleSpacing: 10,
+                  titleSpacing: 20,
                   elevation: 0,
                   iconTheme: IconThemeData(color: Colors.black),
                   actionsIconTheme: IconThemeData(color: Colors.black),

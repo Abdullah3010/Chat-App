@@ -84,4 +84,29 @@ class AddFriendCubit extends Cubit<AddFriendsStats> {
       emit(SendRequestErrorStats());
     });
   }
+
+  void removeFriend(String? id, int index) {
+    emit(RemoveFriendLoadingStats());
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc('${ME.uId}')
+        .collection('sent_request')
+        .doc('$id')
+        .delete()
+        .then((value) {
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc('$id')
+          .collection('friend_request')
+          .doc('${ME.uId}')
+          .delete()
+          .catchError((error) {
+        emit(RemoveFriendErrorStats());
+      });
+      sentIndex.remove(index);
+      emit(RemoveFriendSuccessStats());
+    }).catchError((error) {
+      emit(RemoveFriendErrorStats());
+    });
+  }
 }

@@ -75,57 +75,66 @@ class AddFriend extends StatelessWidget {
                                         .copyWith(fontWeight: FontWeight.bold),
                                   ),
                                   Spacer(),
-                                  /*if (state is SendRequestLoadingStats &&
-                                      cubit.sentIndex.contains(index))
+                                  if ((state is SendRequestLoadingStats &&
+                                          cubit.sentIndex.contains(index)) ||
+                                      (state is RemoveFriendLoadingStats &&
+                                          cubit.sentIndex.contains(index)))
                                     Container(
                                       width: 100,
                                       child: Center(
                                         child: CircularProgressIndicator(),
                                       ),
-                                    ),*/
-                                  /*if (state is SendRequestSuccessStats &&
-                                      cubit.sentIndex.contains(index))*/
-                                  defaultButton(
-                                    width: 100,
-                                    addIcon: true,
-                                    icon: Icons.check_circle_outline_rounded,
-                                    iconSize: 55,
-                                    iconColor: Colors.greenAccent,
-                                    background: Theme.of(context)
-                                        .scaffoldBackgroundColor,
-                                    onPressed: () {
-                                      showMyDialog(
-                                        context: context,
-                                        title: 'Are you sure',
-                                        content:
-                                            'you want to cancel your friend request?',
-                                        actionAliment: MainAxisAlignment.center,
-                                        actions: [
-                                          defaultButton(
-                                            text: 'Yes',
-                                            isUpperCase: false,
-                                            width: 130,
-                                            background: Colors.red,
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                          ),
-                                          SizedBox(
-                                            width: 80,
-                                          ),
-                                          defaultButton(
-                                            text: 'No',
-                                            isUpperCase: false,
-                                            width: 130,
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  ),
-                                  /*if (!cubit.sentIndex.contains(index))
+                                    ),
+                                  if (state is SendRequestSuccessStats &&
+                                      cubit.sentIndex.contains(index))
+                                    defaultButton(
+                                      width: 100,
+                                      addIcon: true,
+                                      icon: Icons.check_circle_outline_rounded,
+                                      iconSize: 55,
+                                      iconColor: Colors.greenAccent,
+                                      background: Theme.of(context)
+                                          .scaffoldBackgroundColor,
+                                      onPressed: () {
+                                        showMyDialog(
+                                          context: context,
+                                          title: 'Are you sure',
+                                          content:
+                                              'you want to cancel your friend request?',
+                                          actionAliment:
+                                              MainAxisAlignment.center,
+                                          actions: [
+                                            defaultButton(
+                                              text: 'Yes',
+                                              isUpperCase: false,
+                                              width: 130,
+                                              background: Colors.red,
+                                              onPressed: () {
+                                                cubit.removeFriend(
+                                                    cubit.unfriendUsers[index]
+                                                        .uId,
+                                                    index);
+                                                Navigator.pop(context);
+                                              },
+                                            ),
+                                            SizedBox(
+                                              width: 80,
+                                            ),
+                                            defaultButton(
+                                              text: 'No',
+                                              isUpperCase: false,
+                                              width: 130,
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                  if (!cubit.sentIndex.contains(index) ||
+                                      (!cubit.sentIndex.contains(index) &&
+                                          state is RemoveFriendSuccessStats))
                                     defaultButton(
                                       width: 100,
                                       addIcon: true,
@@ -141,7 +150,7 @@ class AddFriend extends StatelessWidget {
                                           index: index,
                                         );
                                       },
-                                    ),*/
+                                    ),
                                 ],
                               );
                             },

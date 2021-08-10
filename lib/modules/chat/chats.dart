@@ -54,20 +54,22 @@ class Chats extends StatelessWidget {
                     return ListView.separated(
                       separatorBuilder: (context, index) => Divider(),
                       itemBuilder: (context, index) {
-                        return InkWell(
-                          child: userData(
-                            context: context,
-                            image: friends.data!.docs[index]['image_url'],
-                            username: friends.data!.docs[index]['username'],
-                            lastMessage: friends.data!.docs[index]
-                                ['last_message'],
-                            isOnline: cubit.states[index] == 'online',
-                          ),
-                          onTap: () {
-                            receiverId = friends.data!.docs[index].id;
-                            cubit.getChatId(friends.data!.docs[index].id);
-                          },
-                        );
+                        if (friends.data!.docs[index].id != 'null')
+                          return InkWell(
+                            child: userData(
+                              context: context,
+                              image: friends.data!.docs[index]['image_url'],
+                              username: friends.data!.docs[index]['username'],
+                              lastMessage: friends.data!.docs[index]
+                                  ['last_message'],
+                              isOnline: cubit.states[index] == 'online',
+                            ),
+                            onTap: () {
+                              receiverId = friends.data!.docs[index].id;
+                              cubit.getChatId(friends.data!.docs[index].id);
+                            },
+                          );
+                        return Center();
                       },
                       itemCount: friends.data!.docs.length,
                     );
@@ -78,75 +80,6 @@ class Chats extends StatelessWidget {
           );
         },
       ),
-    );
-  }
-
-  Widget userData({
-    required BuildContext context,
-    required String image,
-    required String username,
-    required String lastMessage,
-    bool isOnline = false,
-  }) {
-    return Row(
-      children: [
-        Stack(
-          alignment: Alignment.bottomRight,
-          children: [
-            CircleAvatar(
-              radius: 40,
-              child: CircleAvatar(
-                radius: 37,
-                backgroundImage: NetworkImage(
-                  image,
-                ),
-              ),
-            ),
-            if (isOnline)
-              CircleAvatar(
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                radius: 13,
-                child: CircleAvatar(
-                  backgroundColor: Colors.greenAccent,
-                  radius: 10,
-                ),
-              ),
-          ],
-        ),
-        SizedBox(
-          width: 10,
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              username,
-              style: Theme.of(context)
-                  .textTheme
-                  .headline5!
-                  .copyWith(fontWeight: FontWeight.bold),
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            Padding(
-              padding: EdgeInsets.only(left: 3),
-              child: Container(
-                width: 150,
-                child: Text(
-                  lastMessage,
-                  style: Theme.of(context).textTheme.headline6!.copyWith(
-                        fontWeight: FontWeight.w300,
-                        fontSize: 18,
-                      ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            )
-          ],
-        )
-      ],
     );
   }
 }

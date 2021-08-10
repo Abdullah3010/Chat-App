@@ -63,10 +63,12 @@ Widget defaultButton({
   double radius = 5,
   IconData? icon,
   double iconSize = 30,
+  splashColor: Colors.grey,
 }) =>
     Container(
       width: width,
       child: MaterialButton(
+        splashColor: splashColor,
         padding: EdgeInsets.all(12),
         onPressed: () {
           onPressed();
