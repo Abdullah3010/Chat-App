@@ -45,7 +45,7 @@ class ChatScreen extends StatelessWidget {
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(
-                    Icons.person_pin_rounded,
+                    Icons.lock,
                   ),
                   label: 'Coming soon',
                 ),
