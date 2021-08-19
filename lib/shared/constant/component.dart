@@ -146,3 +146,80 @@ showMyDialog({
         ],
       ),
     );
+
+Widget circleImage({
+  required String image,
+  double bigRadius = 35,
+  double smallRadius = 33,
+}) {
+  return CircleAvatar(
+    radius: bigRadius,
+    child: CircleAvatar(
+      radius: smallRadius,
+      backgroundImage: NetworkImage(
+        image,
+      ),
+    ),
+  );
+}
+
+Widget userData({
+  required BuildContext context,
+  required String image,
+  required String username,
+  String lastMessage = '',
+  bool isOnline = false,
+}) {
+  return Row(
+    children: [
+      Stack(
+        alignment: Alignment.bottomRight,
+        children: [
+          circleImage(image: image),
+          if (isOnline)
+            CircleAvatar(
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              radius: 10,
+              child: CircleAvatar(
+                backgroundColor: Colors.greenAccent,
+                radius: 7,
+              ),
+            ),
+        ],
+      ),
+      SizedBox(
+        width: 10,
+      ),
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            username,
+            style: Theme.of(context)
+                .textTheme
+                .headline6!
+                .copyWith(fontWeight: FontWeight.bold),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: 3),
+            child: Container(
+              width: 150,
+              child: Text(
+                lastMessage,
+                style: Theme.of(context).textTheme.headline6!.copyWith(
+                      fontWeight: FontWeight.w300,
+                      fontSize: 14,
+                    ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          )
+        ],
+      )
+    ],
+  );
+}

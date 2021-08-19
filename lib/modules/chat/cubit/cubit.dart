@@ -17,12 +17,22 @@ class ChatCubit extends Cubit<ChatStates> {
   static ChatCubit get(context) => BlocProvider.of(context);
 
   String chatId = '';
+  String imageUrl = '';
+  String username = '';
+  bool isOnline = false;
 
-  void getChatId(String? receiverId) {
+  void getChatId(
+      {required String receiverId,
+      required String image,
+      required String name,
+      required bool online}) {
     FirebaseFirestore.instance.collection('chat').get().then((value) {
       value.docs.forEach((element) {
-        if (element.id.contains(receiverId!) && element.id.contains(ME.uId!)) {
+        if (element.id.contains(receiverId) && element.id.contains(ME.uId!)) {
           chatId = element.id;
+          imageUrl = image;
+          username = name;
+          isOnline = online;
         }
       });
       emit(ChatSuccessState());

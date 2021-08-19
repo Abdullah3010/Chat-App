@@ -21,163 +21,154 @@ class AddFriend extends StatelessWidget {
             'Add Friend',
             style: TextStyle(
               color: Colors.black,
-              fontSize: 24,
+              fontSize: 26,
             ),
           ),
         ),
       ),
       body: BlocProvider(
-          create: (context) => AddFriendCubit(),
-          child: Padding(
-            padding: EdgeInsets.all(20),
-            child: StreamBuilder(
-                stream:
-                    FirebaseFirestore.instance.collection('users').snapshots(),
-                builder: (context, AsyncSnapshot<QuerySnapshot> users) {
-                  if (users.hasError) return ErrorScreen();
-                  if (users.connectionState == ConnectionState.waiting)
+        create: (context) => AddFriendCubit(),
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: StreamBuilder(
+            stream: FirebaseFirestore.instance.collection('users').snapshots(),
+            builder: (context, AsyncSnapshot<QuerySnapshot> users) {
+              if (users.hasError) return ErrorScreen();
+              if (users.connectionState == ConnectionState.waiting)
+                return LoadingScreen();
+
+              return StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc('${ME.uId}')
+                    .collection('sent_request')
+                    .snapshots(),
+                builder: (context, AsyncSnapshot<QuerySnapshot> sentRequest) {
+                  if (sentRequest.hasError) return ErrorScreen();
+                  if (sentRequest.connectionState == ConnectionState.waiting)
                     return LoadingScreen();
 
-                  return StreamBuilder(
-                    stream: FirebaseFirestore.instance
-                        .collection('users')
-                        .doc('${ME.uId}')
-                        .collection('sent_request')
-                        .snapshots(),
-                    builder:
-                        (context, AsyncSnapshot<QuerySnapshot> sentRequest) {
-                      if (sentRequest.hasError) return ErrorScreen();
-                      if (sentRequest.connectionState ==
-                          ConnectionState.waiting) return LoadingScreen();
-
-                      return BlocConsumer<AddFriendCubit, AddFriendsStats>(
-                          listener: (context, state) {},
-                          builder: (context, state) {
-                            cubit = AddFriendCubit.get(context);
-                            if (state is AddFriendsInitialStats)
-                              cubit.getUnfriendUsers(
-                                users.data!.docs,
-                                sentRequest.data!.docs,
-                              );
-                            return ListView.separated(
-                              physics: BouncingScrollPhysics(),
-                              separatorBuilder: (context, index) => Divider(
-                                height: 35,
-                                thickness: 2,
-                                indent: 30,
-                                endIndent: 30,
+                  return BlocConsumer<AddFriendCubit, AddFriendsStats>(
+                    listener: (context, state) {},
+                    builder: (context, state) {
+                      cubit = AddFriendCubit.get(context);
+                      if (state is AddFriendsInitialStats)
+                        cubit.getUnfriendUsers(
+                          users.data!.docs,
+                          sentRequest.data!.docs,
+                        );
+                      return ListView.separated(
+                        physics: BouncingScrollPhysics(),
+                        separatorBuilder: (context, index) => Divider(
+                          height: 35,
+                          thickness: 2,
+                          indent: 20,
+                          endIndent: 20,
+                        ),
+                        itemBuilder: (context, index) {
+                          return Row(
+                            children: [
+                              circleImage(
+                                image: cubit.unfriendUsers[index].imageUrl!,
                               ),
-                              itemBuilder: (context, index) {
-                                return Row(
-                                  children: [
-                                    CircleAvatar(
-                                      radius: 40,
-                                      child: CircleAvatar(
-                                        radius: 37,
-                                        backgroundImage: NetworkImage(
+                              SizedBox(
+                                width: 15,
+                              ),
+                              Text(
+                                cubit.unfriendUsers[index].username!,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline6!
+                                    .copyWith(fontWeight: FontWeight.bold),
+                              ),
+                              Spacer(),
+                              if ((state is SendRequestLoadingStats &&
+                                      cubit.sentIndex.contains(index)) ||
+                                  (state is RemoveFriendLoadingStats &&
+                                      cubit.sentIndex.contains(index)))
+                                Container(
+                                  width: 80,
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                ),
+                              if (state is SendRequestSuccessStats &&
+                                  cubit.sentIndex.contains(index))
+                                defaultButton(
+                                  width: 80,
+                                  addIcon: true,
+                                  icon: Icons.check_circle_outline_rounded,
+                                  iconSize: 34,
+                                  iconColor: Colors.greenAccent,
+                                  background:
+                                      Theme.of(context).scaffoldBackgroundColor,
+                                  onPressed: () {
+                                    showMyDialog(
+                                      context: context,
+                                      title: 'Are you sure',
+                                      content:
+                                          'you want to cancel your friend request?',
+                                      actionAliment: MainAxisAlignment.center,
+                                      actions: [
+                                        defaultButton(
+                                          text: 'Yes',
+                                          isUpperCase: false,
+                                          width: 100,
+                                          background: Colors.red,
+                                          onPressed: () {
+                                            cubit.removeFriend(
+                                                cubit.unfriendUsers[index].uId,
+                                                index);
+                                            Navigator.pop(context);
+                                          },
+                                        ),
+                                        Spacer(),
+                                        defaultButton(
+                                          text: 'No',
+                                          isUpperCase: false,
+                                          width: 100,
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                              if (!cubit.sentIndex.contains(index) ||
+                                  (!cubit.sentIndex.contains(index) &&
+                                      state is RemoveFriendSuccessStats))
+                                defaultButton(
+                                  width: 80,
+                                  addIcon: true,
+                                  icon: Icons.add,
+                                  iconColor: Theme.of(context).primaryColor,
+                                  background: Color.fromRGBO(0, 0, 0, 0),
+                                  iconSize: 34,
+                                  onPressed: () {
+                                    cubit.sendFriendRequest(
+                                      to: cubit.unfriendUsers[index].uId!,
+                                      name:
+                                          cubit.unfriendUsers[index].username!,
+                                      image:
                                           cubit.unfriendUsers[index].imageUrl!,
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 15,
-                                    ),
-                                    Text(
-                                      cubit.unfriendUsers[index].username!,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headline5!
-                                          .copyWith(
-                                              fontWeight: FontWeight.bold),
-                                    ),
-                                    Spacer(),
-                                    if ((state is SendRequestLoadingStats &&
-                                            cubit.sentIndex.contains(index)) ||
-                                        (state is RemoveFriendLoadingStats &&
-                                            cubit.sentIndex.contains(index)))
-                                      Container(
-                                        width: 100,
-                                        child: Center(
-                                          child: CircularProgressIndicator(),
-                                        ),
-                                      ),
-                                    if (state is SendRequestSuccessStats &&
-                                        cubit.sentIndex.contains(index))
-                                      defaultButton(
-                                        width: 100,
-                                        addIcon: true,
-                                        icon:
-                                            Icons.check_circle_outline_rounded,
-                                        iconSize: 55,
-                                        iconColor: Colors.greenAccent,
-                                        background: Theme.of(context)
-                                            .scaffoldBackgroundColor,
-                                        onPressed: () {
-                                          showMyDialog(
-                                            context: context,
-                                            title: 'Are you sure',
-                                            content:
-                                                'you want to cancel your friend request?',
-                                            actionAliment:
-                                                MainAxisAlignment.center,
-                                            actions: [
-                                              defaultButton(
-                                                text: 'Yes',
-                                                isUpperCase: false,
-                                                width: 130,
-                                                background: Colors.red,
-                                                onPressed: () {
-                                                  cubit.removeFriend(
-                                                      cubit.unfriendUsers[index]
-                                                          .uId,
-                                                      index);
-                                                  Navigator.pop(context);
-                                                },
-                                              ),
-                                              SizedBox(
-                                                width: 80,
-                                              ),
-                                              defaultButton(
-                                                text: 'No',
-                                                isUpperCase: false,
-                                                width: 130,
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                },
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      ),
-                                    if (!cubit.sentIndex.contains(index) ||
-                                        (!cubit.sentIndex.contains(index) &&
-                                            state is RemoveFriendSuccessStats))
-                                      defaultButton(
-                                        width: 100,
-                                        addIcon: true,
-                                        icon: Icons.add,
-                                        iconSize: 34,
-                                        onPressed: () {
-                                          cubit.sendFriendRequest(
-                                            to: cubit.unfriendUsers[index].uId!,
-                                            name: cubit
-                                                .unfriendUsers[index].username!,
-                                            image: cubit
-                                                .unfriendUsers[index].imageUrl!,
-                                            index: index,
-                                          );
-                                        },
-                                      ),
-                                  ],
-                                );
-                              },
-                              itemCount: cubit.unfriendUsers.length,
-                            );
-                          });
+                                      index: index,
+                                    );
+                                  },
+                                ),
+                            ],
+                          );
+                        },
+                        itemCount: cubit.unfriendUsers.length,
+                      );
                     },
                   );
-                }),
-          )),
+                },
+              );
+            },
+          ),
+        ),
+      ),
     );
   }
 }

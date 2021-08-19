@@ -13,9 +13,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
+  print(1);
   await LocalData.int();
-
+  print(2);
   ID = LocalData.getString(key: 'uid') ?? 'null';
 
   runApp(MyApp());

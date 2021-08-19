@@ -27,13 +27,10 @@ class Profile extends StatelessWidget {
                       Stack(
                         alignment: Alignment.bottomRight,
                         children: [
-                          CircleAvatar(
-                            radius: 100,
-                            backgroundColor: Theme.of(context).primaryColor,
-                            child: CircleAvatar(
-                              radius: 90,
-                              backgroundImage: NetworkImage('${ME.imageUrl}'),
-                            ),
+                          circleImage(
+                            image: '${ME.imageUrl}',
+                            bigRadius: 83,
+                            smallRadius: 80,
                           ),
                           Padding(
                             padding: EdgeInsets.only(
@@ -67,8 +64,8 @@ class Profile extends StatelessWidget {
                             '${ME.username}',
                             style: Theme.of(context)
                                 .textTheme
-                                .headline4!
-                                .copyWith(color: Colors.black),
+                                .headline5!
+                                .copyWith(fontWeight: FontWeight.bold),
                           ),
                           IconButton(
                             icon: Icon(Icons.edit),
@@ -105,81 +102,76 @@ class Profile extends StatelessWidget {
                         horizontal: 20,
                         vertical: 15,
                       ),
-                      child: ListView.separated(
-                        physics: BouncingScrollPhysics(),
-                        separatorBuilder: (context, index) => Divider(),
-                        itemBuilder: (context, index) {
-                          if (FRIENDS[index].uId != 'null')
-                            return Row(
-                              children: [
-                                CircleAvatar(
-                                  radius: 40,
-                                  child: CircleAvatar(
-                                    radius: 37,
-                                    backgroundImage: NetworkImage(
-                                      FRIENDS[index].imageUrl!,
+                      child: FRIENDS.isEmpty
+                          ? Center()
+                          : ListView.separated(
+                              physics: BouncingScrollPhysics(),
+                              separatorBuilder: (context, index) => Divider(),
+                              itemBuilder: (context, index) {
+                                return Row(
+                                  children: [
+                                    circleImage(
+                                      image: FRIENDS[index].imageUrl!,
                                     ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 15,
-                                ),
-                                Text(
-                                  FRIENDS[index].username!,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headline5!
-                                      .copyWith(fontWeight: FontWeight.bold),
-                                ),
-                                Spacer(),
-                                defaultButton(
-                                  width: 120,
-                                  addIcon: true,
-                                  icon: Icons.delete_outline_rounded,
-                                  iconColor: Colors.white,
-                                  iconSize: 35,
-                                  background: Colors.red.withOpacity(0.9),
-                                  splashColor: Colors.white.withOpacity(0.2),
-                                  onPressed: () {
-                                    showMyDialog(
-                                      context: context,
-                                      title: 'Are you sure',
-                                      content:
-                                          'you want to delete your friend ${FRIENDS[index].username!}?',
-                                      actionAliment: MainAxisAlignment.center,
-                                      actions: [
-                                        defaultButton(
-                                          text: 'Yes',
-                                          isUpperCase: false,
-                                          width: 130,
-                                          background: Colors.red,
-                                          onPressed: () {
-                                            cubit.removeFriend(
-                                                FRIENDS[index].uId, index);
-                                            Navigator.pop(context);
-                                          },
-                                        ),
-                                        SizedBox(
-                                          width: 80,
-                                        ),
-                                        defaultButton(
-                                          text: 'No',
-                                          isUpperCase: false,
-                                          width: 130,
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                ),
-                              ],
-                            );
-                          return Center();
-                        },
-                        itemCount: FRIENDS.length,
-                      ),
+                                    SizedBox(
+                                      width: 15,
+                                    ),
+                                    Text(
+                                      FRIENDS[index].username!,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headline6!
+                                          .copyWith(
+                                              fontWeight: FontWeight.bold),
+                                    ),
+                                    Spacer(),
+                                    defaultButton(
+                                      width: 80,
+                                      addIcon: true,
+                                      icon: Icons.delete_outline_rounded,
+                                      iconColor: Colors.white,
+                                      iconSize: 35,
+                                      background: Colors.red.withOpacity(0.9),
+                                      splashColor:
+                                          Colors.white.withOpacity(0.2),
+                                      onPressed: () {
+                                        showMyDialog(
+                                          context: context,
+                                          title: 'Are you sure',
+                                          content:
+                                              'you want to delete your friend ${FRIENDS[index].username!}?',
+                                          actionAliment:
+                                              MainAxisAlignment.center,
+                                          actions: [
+                                            defaultButton(
+                                              text: 'Yes',
+                                              isUpperCase: false,
+                                              width: 130,
+                                              background: Colors.red,
+                                              onPressed: () {
+                                                cubit.removeFriend(
+                                                    FRIENDS[index].uId, index);
+                                                Navigator.pop(context);
+                                              },
+                                            ),
+                                            Spacer(),
+                                            defaultButton(
+                                              text: 'No',
+                                              isUpperCase: false,
+                                              width: 130,
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                              itemCount: FRIENDS.length,
+                            ),
                     ),
                   ),
                 ],

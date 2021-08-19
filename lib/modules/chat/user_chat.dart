@@ -1,10 +1,10 @@
 import 'package:chat/modules/chat/cubit/cubit.dart';
 import 'package:chat/modules/chat/cubit/states.dart';
+import 'package:chat/shared/constant/component.dart';
 import 'package:chat/shared/constant/constants.dart';
 import 'package:chat/shared/constant/error_screen.dart';
 import 'package:chat/shared/constant/loading_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,7 +24,46 @@ class UserChat extends StatelessWidget {
         listener: (context, state) {},
         builder: (context, state) {
           return Scaffold(
-            appBar: AppBar(),
+            appBar: AppBar(
+              backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+              toolbarHeight: 70,
+              flexibleSpace: Padding(
+                padding: const EdgeInsets.only(left: 50, bottom: 10),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    circleImage(
+                      image: cubit.imageUrl,
+                      bigRadius: 27,
+                      smallRadius: 25,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            cubit.username,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 3,
+                          ),
+                          Text(
+                            cubit.isOnline ? 'Online' : 'Offline',
+                            style: TextStyle(fontWeight: FontWeight.w300),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
             body: Padding(
               padding: EdgeInsets.all(20),
               child: Column(
@@ -87,17 +126,17 @@ class UserChat extends StatelessWidget {
                                 decoration: InputDecoration(
                                   hintStyle: Theme.of(context)
                                       .textTheme
-                                      .bodyText2!
+                                      .headline3!
                                       .copyWith(fontSize: 18),
                                   hintText: 'type a message ....',
                                   border: InputBorder.none,
                                 ),
                               ),
                             ),
-                            height: 60,
+                            height: 50,
                             padding: EdgeInsets.symmetric(horizontal: 16),
                             decoration: BoxDecoration(
-                              color: Colors.grey,
+                              color: Colors.grey.withOpacity(0.5),
                               borderRadius: BorderRadius.circular(24),
                             ),
                           ),
@@ -108,8 +147,8 @@ class UserChat extends StatelessWidget {
                         Expanded(
                           flex: 0,
                           child: Container(
-                            height: 60,
-                            width: 60,
+                            height: 50,
+                            width: 50,
                             child: MaterialButton(
                               onPressed: () {
                                 cubit.sendMessage(
@@ -120,7 +159,7 @@ class UserChat extends StatelessWidget {
                               },
                               child: Icon(
                                 Icons.send,
-                                size: 34,
+                                size: 22,
                                 color: Colors.white,
                               ),
                             ),
@@ -151,23 +190,31 @@ class UserChat extends StatelessWidget {
         alignment: isMe
             ? AlignmentDirectional.centerEnd
             : AlignmentDirectional.centerStart,
-        child: Container(
-          width: 250,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
-              topRight: isMe ? Radius.circular(0) : Radius.circular(10),
-              bottomLeft: Radius.circular(10),
-              bottomRight: Radius.circular(10),
-              topLeft: !isMe ? Radius.circular(0) : Radius.circular(10),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 250),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                topRight: isMe ? Radius.circular(0) : Radius.circular(10),
+                bottomLeft: Radius.circular(10),
+                bottomRight: Radius.circular(10),
+                topLeft: !isMe ? Radius.circular(0) : Radius.circular(10),
+              ),
+              color: isMe
+                  ? Theme.of(context).primaryColor.withOpacity(0.5)
+                  : Colors.grey.withOpacity(0.5),
             ),
-            color: isMe ? Theme.of(context).primaryColor : Colors.grey,
-          ),
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-          child: Text(
-            message,
-            style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                  fontSize: 16,
-                ),
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Text(
+                message,
+                style: Theme.of(context).textTheme.headline5!.copyWith(
+                      fontSize: 16,
+                    ),
+                textAlign: isMe ? TextAlign.end : TextAlign.start,
+              ),
+            ),
           ),
         ),
       );

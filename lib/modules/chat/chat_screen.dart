@@ -45,15 +45,15 @@ class ChatScreen extends StatelessWidget {
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(
-                    Icons.lock,
+                    Icons.settings,
                   ),
-                  label: 'Coming soon',
+                  label: 'Settings',
                 ),
               ],
               showUnselectedLabels: true,
-              elevation: 20,
+              elevation: 5,
               currentIndex: cubit.currentIndex,
-              iconSize: 40,
+              iconSize: 30,
               selectedItemColor: Theme.of(context).primaryColor,
               unselectedItemColor: Colors.grey,
               selectedLabelStyle: TextStyle(
@@ -62,15 +62,17 @@ class ChatScreen extends StatelessWidget {
               ),
               unselectedLabelStyle: TextStyle(
                 color: Colors.grey,
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.bold,
               ),
               unselectedIconTheme: IconThemeData(
-                size: 28,
+                size: 24,
               ),
               onTap: (index) {
                 cubit.changeScreen(index);
               },
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              type: BottomNavigationBarType.fixed,
             ),
           );
         },
