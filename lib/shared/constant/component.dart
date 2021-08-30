@@ -63,7 +63,9 @@ Widget defaultButton({
   double radius = 5,
   IconData? icon,
   double iconSize = 30,
-  splashColor: Colors.grey,
+  double textSize = 22,
+  Color splashColor = Colors.grey,
+  FontWeight fontWeight = FontWeight.bold,
 }) =>
     Container(
       width: width,
@@ -89,8 +91,8 @@ Widget defaultButton({
               isUpperCase ? text.toUpperCase() : text,
               style: TextStyle(
                 color: textColor,
-                fontWeight: FontWeight.bold,
-                fontSize: 22,
+                fontWeight: fontWeight,
+                fontSize: textSize,
               ),
             ),
           ],

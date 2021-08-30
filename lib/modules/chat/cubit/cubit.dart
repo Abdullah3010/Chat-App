@@ -3,9 +3,9 @@ import 'package:chat/models/message.dart';
 import 'package:chat/models/user.dart';
 import 'package:chat/modules/chat/chats.dart';
 import 'package:chat/modules/chat/cubit/states.dart';
-import 'package:chat/modules/coming_soon/coming_soon_screen.dart';
 import 'package:chat/modules/friends/add_friend_screen.dart';
 import 'package:chat/modules/profile/profile_screen.dart';
+import 'package:chat/modules/settings/settings_screen.dart';
 import 'package:chat/shared/constant/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -38,43 +38,6 @@ class ChatCubit extends Cubit<ChatStates> {
       emit(ChatSuccessState());
     }).catchError((error) {
       emit(ChatErrorState());
-    });
-  }
-
-  List<String> states = [];
-
-  void getUsersState(
-    List<QueryDocumentSnapshot<Object?>> users,
-    List<QueryDocumentSnapshot<Object?>> friends,
-  ) {
-    states.clear();
-    friends.forEach((friend) {
-      users.forEach((user) {
-        if (user.id == friend.id) {
-          if (user['state'].toString().toLowerCase() == 'online') {
-            states.add('online');
-          } else {
-            states.add(user['state'].toString().toLowerCase());
-          }
-        }
-      });
-    });
-  }
-
-  void getFriends() {
-    FRIENDS.clear();
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc('${ME.uId}')
-        .collection('friends')
-        .get()
-        .then((value) {
-      value.docs.forEach((element) {
-        FRIENDS.add(Friends.fromJson(
-          element.data(),
-          element.id,
-        ));
-      });
     });
   }
 
@@ -123,7 +86,7 @@ class ChatCubit extends Cubit<ChatStates> {
   }
 
   int currentIndex = 1;
-  List<Widget> screens = [AddFriend(), Chats(), Profile(), ComingSoon()];
+  List<Widget> screens = [AddFriend(), Chats(), Profile(), SettingsScreen()];
   void changeScreen(int index) {
     currentIndex = index;
     emit(ChangeScreenState());

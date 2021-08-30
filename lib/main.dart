@@ -28,18 +28,23 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (context) => ChatAppCubit()..getData(ID),
+            create: (context) => ChatAppCubit()
+              ..getData(ID)
+              ..getFriends(),
           ),
         ],
         child: BlocConsumer<ChatAppCubit, ChatAppStates>(
           listener: (context, state) {},
           builder: (context, state) {
-            if (state is GetDataLoadingState) widget = LoadingScreen();
+            if (state is GetDataLoadingState || state is GetFriendsLoadingState)
+              widget = LoadingScreen();
 
-            if (state is GetDataErrorState) widget = ErrorScreen();
+            if (state is GetDataErrorState || state is GetFriendsErrorState)
+              widget = ErrorScreen();
 
-            if (state is GetDataSuccessState) widget = ChatScreen();
+            if (state is GetFriendsSuccessState) widget = ChatScreen();
 
+            print(ME.username);
             return MaterialApp(
               debugShowCheckedModeBanner: false,
               title: 'Flutter Demo',

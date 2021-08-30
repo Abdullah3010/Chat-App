@@ -17,6 +17,7 @@ class UserChat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(111);
     TextEditingController textController = TextEditingController();
     return BlocProvider(
       create: (context) => ChatCubit(),
@@ -38,7 +39,7 @@ class UserChat extends StatelessWidget {
                       smallRadius: 25,
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         crossAxisAlignment: CrossAxisAlignment.start,

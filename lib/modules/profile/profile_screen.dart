@@ -62,10 +62,10 @@ class Profile extends StatelessWidget {
                           ),
                           Text(
                             '${ME.username}',
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline5!
-                                .copyWith(fontWeight: FontWeight.bold),
+                            style:
+                                Theme.of(context).textTheme.headline5!.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                           ),
                           IconButton(
                             icon: Icon(Icons.edit),

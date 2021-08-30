@@ -15,6 +15,10 @@ class Chats extends StatelessWidget {
     ChatCubit cubit = ChatCubit();
     String? receiverId;
 
+    FRIENDS.forEach((element) {
+      print(element.username);
+    });
+
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 20,
@@ -57,10 +61,10 @@ class Chats extends StatelessWidget {
                       if (users.hasError) return ErrorScreen();
                       if (users.connectionState == ConnectionState.waiting)
                         return LoadingScreen();
-                      cubit.getUsersState(
-                        users.data!.docs,
-                        friends.data!.docs,
-                      );
+                      // cubit.getUsersState(
+                      //   users.data!.docs,
+                      //   friends.data!.docs,
+                      // );
                       if (friends.data!.docs.isEmpty) return Center();
                       return ListView.separated(
                         separatorBuilder: (context, index) => Divider(),
@@ -68,23 +72,26 @@ class Chats extends StatelessWidget {
                           return InkWell(
                             child: userData(
                               context: context,
-                              image: friends.data!.docs[index]['image_url'],
-                              username: friends.data!.docs[index]['username'],
-                              lastMessage: friends.data!.docs[index]
-                                  ['last_message'],
-                              isOnline: cubit.states[index] == 'online',
+                              image: FRIENDS[index]
+                                  .imageUrl!, //friends.data!.docs[index]['image_url'],
+                              username: FRIENDS[index]
+                                  .username!, //friends.data!.docs[index]['username'],
+                              lastMessage: FRIENDS[index]
+                                  .lastMessage!, //friends.data!.docs[index]
+                              //['last_message'],
+                              isOnline: FRIENDS[index].state == 'Online',
                             ),
                             onTap: () {
-                              receiverId = friends.data!.docs[index].id;
+                              receiverId = FRIENDS[index].uId!;
                               cubit.getChatId(
-                                  receiverId: friends.data!.docs[index].id,
-                                  image: friends.data!.docs[index]['image_url'],
-                                  name: friends.data!.docs[index]['username'],
-                                  online: cubit.states[index] == 'online');
+                                  receiverId: FRIENDS[index].uId!,
+                                  image: FRIENDS[index].imageUrl!,
+                                  name: FRIENDS[index].username!,
+                                  online: FRIENDS[index].state == 'Online');
                             },
                           );
                         },
-                        itemCount: friends.data!.docs.length,
+                        itemCount: FRIENDS.length,
                       );
                     },
                   );

@@ -47,11 +47,13 @@ class Friends {
   Friends.fromJson(
     Map<String, dynamic> json,
     String uid,
+    String userState,
   ) {
     username = json['username'];
     imageUrl = json['image_url'];
     lastMessage = json['last_message'];
     uId = uid;
+    state = userState;
   }
 
   Map<String, dynamic> toMap() {
