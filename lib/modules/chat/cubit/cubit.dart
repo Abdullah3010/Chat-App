@@ -34,6 +34,7 @@ class ChatCubit extends Cubit<ChatStates> {
           username = name;
           isOnline = online;
         }
+        print(element.id);
       });
       emit(ChatSuccessState());
     }).catchError((error) {
@@ -87,8 +88,31 @@ class ChatCubit extends Cubit<ChatStates> {
 
   int currentIndex = 1;
   List<Widget> screens = [AddFriend(), Chats(), Profile(), SettingsScreen()];
+
   void changeScreen(int index) {
     currentIndex = index;
     emit(ChangeScreenState());
+  }
+
+  void getUsersState(
+    QuerySnapshot<Object?> users,
+    QuerySnapshot<Object?> friends,
+  ) {
+    FRIENDS.clear();
+    friends.docs.forEach((friend) {
+      users.docs.forEach((user) {
+        if (user.id == friend.id) {
+          FRIENDS.add(
+            Friends(
+              username: user['username'],
+              uId: user.id,
+              state: user['state'],
+              imageUrl: user['image_url'],
+              lastMessage: friend['last_message'],
+            ),
+          );
+        }
+      });
+    });
   }
 }

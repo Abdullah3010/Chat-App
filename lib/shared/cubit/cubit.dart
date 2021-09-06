@@ -25,47 +25,30 @@ class ChatAppCubit extends Cubit<ChatAppStates> {
         .then((value) {
       ME = NewUser.fromJson(value.data()!);
       ME.uId = uid;
-      emit(GetDataSuccessState());
-    }).catchError((error) {
-      emit(GetDataErrorState());
-    });
-  }
-
-  void getFriends() {
-    emit(GetFriendsLoadingState());
-    FRIENDS.clear();
-    FirebaseFirestore.instance.collection('users').get().then((user) {
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc('${ME.uId}')
-          .collection('friends')
-          .get()
-          .then((friend) {
-        friend.docs.forEach((friend) {
-          user.docs.forEach((user) {
-            if (user.id == friend.id) {
-              if (user['state'].toString().toLowerCase() == 'online') {
+      FRIENDS.clear();
+      FirebaseFirestore.instance.collection('users').get().then((user) {
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc('$uid')
+            .collection('friends')
+            .get()
+            .then((friend) {
+          friend.docs.forEach((friend) {
+            user.docs.forEach((user) {
+              if (user.id == friend.id) {
                 FRIENDS.add(Friends.fromJson(
-                  friend.data(),
-                  friend.id,
-                  'Online',
-                ));
-              } else {
-                FRIENDS.add(Friends.fromJson(
-                  friend.data(),
-                  friend.id,
-                  'Offline',
+                  user.data(),
+                  user.id,
+                  friend.data()['last_message'],
                 ));
               }
-            }
+            });
           });
+          emit(GetDataSuccessState());
+        }).catchError((error) {
+          emit(GetDataErrorState());
         });
-        emit(GetFriendsSuccessState());
-      }).catchError((error) {
-        emit(GetFriendsErrorState());
       });
-    }).catchError((error) {
-      emit(GetFriendsErrorState());
     });
   }
 }

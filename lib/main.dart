@@ -13,9 +13,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  print(1);
   await LocalData.int();
-  print(2);
   ID = LocalData.getString(key: 'uid') ?? 'null';
 
   runApp(MyApp());
@@ -28,23 +26,18 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (context) => ChatAppCubit()
-              ..getData(ID)
-              ..getFriends(),
+            create: (context) => ChatAppCubit()..getData(ID),
           ),
         ],
         child: BlocConsumer<ChatAppCubit, ChatAppStates>(
           listener: (context, state) {},
           builder: (context, state) {
-            if (state is GetDataLoadingState || state is GetFriendsLoadingState)
-              widget = LoadingScreen();
+            if (state is GetDataLoadingState) widget = LoadingScreen();
 
-            if (state is GetDataErrorState || state is GetFriendsErrorState)
-              widget = ErrorScreen();
+            if (state is GetDataErrorState) widget = ErrorScreen();
 
-            if (state is GetFriendsSuccessState) widget = ChatScreen();
+            if (state is GetDataSuccessState) widget = ChatScreen();
 
-            print(ME.username);
             return MaterialApp(
               debugShowCheckedModeBanner: false,
               title: 'Flutter Demo',

@@ -36,7 +36,6 @@ class Chats extends StatelessWidget {
           listener: (context, state) {
             if (state is ChatSuccessState)
               navigate(context, UserChat(receiverId!, cubit));
-            print(receiverId);
           },
           builder: (context, state) {
             cubit = ChatCubit.get(context);
@@ -61,10 +60,10 @@ class Chats extends StatelessWidget {
                       if (users.hasError) return ErrorScreen();
                       if (users.connectionState == ConnectionState.waiting)
                         return LoadingScreen();
-                      // cubit.getUsersState(
-                      //   users.data!.docs,
-                      //   friends.data!.docs,
-                      // );
+                      cubit.getUsersState(
+                        users.data!,
+                        friends.data!,
+                      );
                       if (friends.data!.docs.isEmpty) return Center();
                       return ListView.separated(
                         separatorBuilder: (context, index) => Divider(),

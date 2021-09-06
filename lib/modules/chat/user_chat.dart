@@ -17,8 +17,9 @@ class UserChat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(111);
     TextEditingController textController = TextEditingController();
+
+    print("111 => " + cubit.chatId);
     return BlocProvider(
       create: (context) => ChatCubit(),
       child: BlocConsumer<ChatCubit, ChatStates>(

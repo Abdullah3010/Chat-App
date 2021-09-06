@@ -8,8 +8,6 @@ class ChatSuccessState extends ChatStates {}
 
 class ChatErrorState extends ChatStates {}
 
-class GetFriendsSuccessState extends ChatStates {}
-
 class MessageSendLoadState extends ChatStates {}
 
 class MessageSendSuccessState extends ChatStates {}
