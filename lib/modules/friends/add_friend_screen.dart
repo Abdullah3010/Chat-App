@@ -1,5 +1,6 @@
 import 'package:chat/modules/friends/cubit/cubit.dart';
 import 'package:chat/modules/friends/cubit/states.dart';
+import 'package:chat/modules/friends/friend_request_screen.dart';
 import 'package:chat/shared/constant/component.dart';
 import 'package:chat/shared/constant/constants.dart';
 import 'package:chat/shared/constant/error_screen.dart';
@@ -25,6 +26,20 @@ class AddFriend extends StatelessWidget {
             ),
           ),
         ),
+        actions: [
+          Padding(
+            padding: EdgeInsets.only(right: 8.0),
+            child: IconButton(
+              icon: Icon(
+                Icons.notifications,
+                size: 28,
+              ),
+              onPressed: () {
+                navigate(context, FriendRequest());
+              },
+            ),
+          ),
+        ],
       ),
       body: BlocProvider(
         create: (context) => AddFriendCubit(),
@@ -108,28 +123,34 @@ class AddFriend extends StatelessWidget {
                                       title: 'Are you sure',
                                       content:
                                           'you want to cancel your friend request?',
-                                      actionAliment: MainAxisAlignment.center,
                                       actions: [
-                                        defaultButton(
-                                          text: 'Yes',
-                                          isUpperCase: false,
-                                          width: 100,
-                                          background: Colors.red,
-                                          onPressed: () {
-                                            cubit.removeFriend(
-                                                cubit.unfriendUsers[index].uId,
-                                                index);
-                                            Navigator.pop(context);
-                                          },
-                                        ),
-                                        Spacer(),
-                                        defaultButton(
-                                          text: 'No',
-                                          isUpperCase: false,
-                                          width: 100,
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            defaultButton(
+                                              text: 'Yes',
+                                              isUpperCase: false,
+                                              width: 100,
+                                              background: Colors.red,
+                                              onPressed: () {
+                                                cubit.removeFriend(
+                                                    cubit.unfriendUsers[index]
+                                                        .uId,
+                                                    index);
+                                                Navigator.pop(context);
+                                              },
+                                            ),
+                                            Spacer(),
+                                            defaultButton(
+                                              text: 'No',
+                                              isUpperCase: false,
+                                              width: 100,
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     );

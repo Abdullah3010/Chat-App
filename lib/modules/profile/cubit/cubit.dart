@@ -51,4 +51,17 @@ class ProfileCubit extends Cubit<ProfileStats> {
       emit(RemoveFriendErrorStats());
     });
   }
+
+  void changeName(String newName) {
+    emit(ChangeNameLoadingStats());
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc('${ME.uId}')
+        .update({'username': newName}).then((value) {
+      ME.username = newName;
+      emit(ChangeNameSuccessStats());
+    }).catchError((error) {
+      emit(ChangeNameErrorStats());
+    });
+  }
 }

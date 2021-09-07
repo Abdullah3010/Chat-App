@@ -27,25 +27,30 @@ class LoginScreen extends StatelessWidget {
                 title: 'Sorry',
                 content: cubit.errorMessage[cubit.errorMessageIndex],
                 actions: [
-                  defaultButton(
-                    text: 'Ok',
-                    background: Colors.red,
-                    textColor: Colors.white,
-                    width: 80,
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      defaultButton(
+                        text: 'Ok',
+                        background: Colors.red,
+                        textColor: Colors.white,
+                        width: 80,
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                      Spacer(),
+                      if (cubit.errorMessageIndex == 2)
+                        defaultButton(
+                          text: 'Register',
+                          width: 130,
+                          onPressed: () {
+                            Navigator.pop(context);
+                            navigate(context, Register());
+                          },
+                        ),
+                    ],
                   ),
-                  Spacer(),
-                  if (cubit.errorMessageIndex == 2)
-                    defaultButton(
-                      text: 'Register',
-                      width: 130,
-                      onPressed: () {
-                        Navigator.pop(context);
-                        navigate(context, Register());
-                      },
-                    ),
                 ],
               );
             }

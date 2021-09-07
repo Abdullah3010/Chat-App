@@ -122,7 +122,6 @@ showMyDialog({
   required String title,
   required String content,
   required List<Widget> actions,
-  MainAxisAlignment actionAliment = MainAxisAlignment.start,
 }) =>
     showDialog(
       context: context,
@@ -139,13 +138,12 @@ showMyDialog({
         ),
         elevation: 20,
         buttonPadding: EdgeInsets.all(20),
+        contentPadding: EdgeInsets.symmetric(
+          vertical: 8,
+          horizontal: 27,
+        ),
         actionsPadding: EdgeInsets.zero,
-        actions: [
-          Row(
-            mainAxisAlignment: actionAliment,
-            children: actions,
-          )
-        ],
+        actions: actions,
       ),
     );
 
@@ -156,12 +154,21 @@ Widget circleImage({
 }) {
   return CircleAvatar(
     radius: bigRadius,
-    child: CircleAvatar(
-      radius: smallRadius,
-      backgroundImage: NetworkImage(
-        image,
-      ),
-    ),
+    child: image != ""
+        ? CircleAvatar(
+            radius: smallRadius,
+            backgroundImage: NetworkImage(
+              image,
+            ),
+          )
+        : CircleAvatar(
+            backgroundColor: Colors.white,
+            radius: smallRadius,
+            child: Icon(
+              Icons.person,
+              size: bigRadius,
+            ),
+          ),
   );
 }
 

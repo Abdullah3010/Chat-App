@@ -38,14 +38,19 @@ class PickUserImage extends StatelessWidget {
                   content: 'Some something wrong check your internet'
                       'and try again.',
                   actions: [
-                    defaultButton(
-                      text: 'Ok',
-                      background: Colors.red,
-                      textColor: Colors.white,
-                      width: 100,
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        defaultButton(
+                          text: 'Ok',
+                          background: Colors.red,
+                          textColor: Colors.white,
+                          width: 100,
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 );
@@ -100,28 +105,34 @@ class PickUserImage extends StatelessWidget {
                                   content: 'Do you want to select from gallery '
                                       'or tack a new one from camera',
                                   actions: [
-                                    defaultButton(
-                                      text: 'Gallery',
-                                      isUpperCase: false,
-                                      addIcon: true,
-                                      icon: Icons.image_outlined,
-                                      width: 150,
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                        cubit.getImageFromGallery();
-                                      },
-                                    ),
-                                    Spacer(),
-                                    defaultButton(
-                                      text: 'Camera',
-                                      isUpperCase: false,
-                                      addIcon: true,
-                                      icon: Icons.camera_alt_outlined,
-                                      width: 150,
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                        cubit.getImageFromCamera();
-                                      },
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        defaultButton(
+                                          text: 'Gallery',
+                                          isUpperCase: false,
+                                          addIcon: true,
+                                          icon: Icons.image_outlined,
+                                          width: 150,
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            cubit.getImageFromGallery();
+                                          },
+                                        ),
+                                        Spacer(),
+                                        defaultButton(
+                                          text: 'Camera',
+                                          isUpperCase: false,
+                                          addIcon: true,
+                                          icon: Icons.camera_alt_outlined,
+                                          width: 150,
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            cubit.getImageFromCamera();
+                                          },
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 );
