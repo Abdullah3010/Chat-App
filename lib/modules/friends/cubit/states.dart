@@ -13,3 +13,9 @@ class RemoveFriendLoadingStats extends AddFriendsStats {}
 class RemoveFriendSuccessStats extends AddFriendsStats {}
 
 class RemoveFriendErrorStats extends AddFriendsStats {}
+
+class AcceptFriendLoadingStats extends AddFriendsStats {}
+
+class AcceptFriendSuccessStats extends AddFriendsStats {}
+
+class AcceptFriendErrorStats extends AddFriendsStats {}

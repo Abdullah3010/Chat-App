@@ -52,6 +52,9 @@ class Chats extends StatelessWidget {
                     .collection('friends')
                     .snapshots(),
                 builder: (context, AsyncSnapshot<QuerySnapshot> friends) {
+                  if (friends.hasError) return ErrorScreen();
+                  if (friends.connectionState == ConnectionState.waiting)
+                    return Center();
                   return StreamBuilder(
                     stream: FirebaseFirestore.instance
                         .collection('users')

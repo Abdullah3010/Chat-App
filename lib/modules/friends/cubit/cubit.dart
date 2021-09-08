@@ -109,4 +109,90 @@ class AddFriendCubit extends Cubit<AddFriendsStats> {
       emit(RemoveFriendErrorStats());
     });
   }
+
+  void acceptRequest(String uid, String username, String image) {
+    emit(AcceptFriendLoadingStats());
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc('${ME.uId}')
+        .collection('friend_request')
+        .doc('$uid')
+        .delete()
+        .then((value) {
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc('${ME.uId}')
+          .collection('friends')
+          .doc('$uid')
+          .set({
+        'image_url': image,
+        'username': username,
+        'last_message': "",
+      }).then((value) {
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc('$uid')
+            .collection('sent_request')
+            .doc('${ME.uId}')
+            .delete()
+            .then((value) {
+          FirebaseFirestore.instance
+              .collection('users')
+              .doc('$uid')
+              .collection('friends')
+              .doc('${ME.uId}')
+              .set({
+            'image_url': ME.imageUrl,
+            'username': ME.username,
+            'last_message': "",
+          }).then((value) {
+            FirebaseFirestore.instance
+                .collection('chat')
+                .doc('${ME.uId}' + '$uid')
+                .set({
+              '${ME.uId}': '',
+              '$uid': '',
+            }).then((value) {
+              emit(AcceptFriendSuccessStats());
+            }).catchError((error) {
+              emit(AcceptFriendErrorStats());
+            });
+          }).catchError((error) {
+            emit(AcceptFriendErrorStats());
+          });
+        }).catchError((error) {
+          emit(AcceptFriendErrorStats());
+        });
+      }).catchError((error) {
+        emit(AcceptFriendErrorStats());
+      });
+    }).catchError((error) {
+      emit(AcceptFriendErrorStats());
+    });
+  }
+
+  void cancelRequest(String uid) {
+    emit(AcceptFriendLoadingStats());
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc('${ME.uId}')
+        .collection('friend_request')
+        .doc('$uid')
+        .delete()
+        .then((value) {
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc('$uid')
+          .collection('sent_request')
+          .doc('${ME.uId}')
+          .delete()
+          .then((value) {
+        emit(AcceptFriendSuccessStats());
+      }).catchError((error) {
+        emit(AcceptFriendErrorStats());
+      });
+    }).catchError((error) {
+      emit(AcceptFriendErrorStats());
+    });
+  }
 }
