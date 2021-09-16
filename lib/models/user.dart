@@ -1,23 +1,30 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class NewUser {
   String? username;
   String? email;
   String? password;
   String? imageUrl;
   String? uId;
+  String? state;
+  Timestamp? lastSeen;
 
-  NewUser({
-    this.username,
-    this.email,
-    this.password,
-    this.imageUrl = 'null',
-    this.uId,
-  });
+  NewUser(
+      {this.username,
+      this.email,
+      this.password,
+      this.imageUrl = 'null',
+      this.uId,
+      this.state,
+      this.lastSeen});
 
   NewUser.fromJson(Map<String, dynamic> json) {
     username = json['username'];
     email = json['email'];
     password = json['password'];
     imageUrl = json['image_url'];
+    state = json['state'];
+    lastSeen = json['last_seen'];
   }
 
   Map<String, dynamic> toMap() {
@@ -26,6 +33,8 @@ class NewUser {
       'email': email,
       'password': password,
       'image_url': imageUrl,
+      'state': state,
+      'last_seen': lastSeen,
     };
   }
 }
@@ -36,13 +45,17 @@ class Friends {
   String? uId;
   String? lastMessage;
   String? state;
+  String? chatID;
+  Timestamp? lastSeen;
 
   Friends(
       {this.username,
       this.imageUrl = 'null',
       this.uId,
       this.lastMessage,
-      this.state});
+      this.state,
+      this.lastSeen,
+      this.chatID});
 
   Friends.fromJson(
     Map<String, dynamic> json,

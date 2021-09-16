@@ -19,3 +19,7 @@ class AcceptFriendLoadingStats extends AddFriendsStats {}
 class AcceptFriendSuccessStats extends AddFriendsStats {}
 
 class AcceptFriendErrorStats extends AddFriendsStats {}
+
+class ColorChangeStats extends AddFriendsStats {}
+
+class GetUnfriendsStats extends AddFriendsStats {}

@@ -3,6 +3,7 @@ import 'package:chat/models/user.dart';
 import 'package:chat/modules/friends/cubit/states.dart';
 import 'package:chat/shared/constant/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddFriendCubit extends Cubit<AddFriendsStats> {
@@ -12,10 +13,13 @@ class AddFriendCubit extends Cubit<AddFriendsStats> {
 
   List<Unfriends> unfriendUsers = [];
   List<String> sentRequest = [];
+  List<String> requests = [];
+  String color = "";
 
   void getUnfriendUsers(
     List<QueryDocumentSnapshot<Object?>> users,
     List<QueryDocumentSnapshot<Object?>> sent,
+    List<QueryDocumentSnapshot<Object?>> request,
   ) {
     unfriendUsers.clear();
     sentRequest.clear();
@@ -23,22 +27,32 @@ class AddFriendCubit extends Cubit<AddFriendsStats> {
     sent.forEach((element) {
       sentRequest.add(element.id);
     });
+    request.forEach((element) {
+      requests.add(element.id);
+    });
+
+    print(sentRequest);
+    print(requests);
 
     users.forEach((user) {
       int check = 0;
-      if (user.id != ME.uId)
+      if (user.id != ME.uId) {
         FRIENDS.forEach((friend) {
-          if (user.id != friend.uId && !sentRequest.contains(user.id)) check++;
+          if (user.id != friend.uId) {
+            check++;
+          }
         });
-
-      if (check == FRIENDS.length)
-        unfriendUsers.add(Unfriends(
-          username: user['username'],
-          uId: user.id,
-          imageUrl: user['image_url'],
-        ));
+        if (check == FRIENDS.length &&
+            !sentRequest.contains(user.id) &&
+            !requests.contains(user.id))
+          unfriendUsers.add(Unfriends(
+            username: user['username'],
+            uId: user.id,
+            imageUrl: user['image_url'],
+          ));
+      }
     });
-    print(sentRequest);
+    emit(GetUnfriendsStats());
   }
 
   List<int> sentIndex = [];
@@ -152,6 +166,10 @@ class AddFriendCubit extends Cubit<AddFriendsStats> {
                 .set({
               '${ME.uId}': '',
               '$uid': '',
+              '${ME.uId}' + 'L': '',
+              '$uid' + 'L': '',
+              '${ME.uId}' + 'unread': 0,
+              '$uid' + 'unread': 0,
             }).then((value) {
               emit(AcceptFriendSuccessStats());
             }).catchError((error) {
@@ -194,5 +212,13 @@ class AddFriendCubit extends Cubit<AddFriendsStats> {
     }).catchError((error) {
       emit(AcceptFriendErrorStats());
     });
+  }
+
+  void changeColor(bool isEmpty) {
+    if (!isEmpty)
+      color = "red";
+    else
+      color = "";
+    emit(ColorChangeStats());
   }
 }

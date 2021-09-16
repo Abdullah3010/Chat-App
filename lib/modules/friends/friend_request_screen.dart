@@ -37,7 +37,7 @@ class FriendRequest extends StatelessWidget {
                   physics: BouncingScrollPhysics(),
                   itemBuilder: (context, index) {
                     return Dismissible(
-                      key: Key('$index'),
+                      key: UniqueKey(),
                       onDismissed: (direction) {
                         if (direction == DismissDirection.startToEnd) {
                           cubit.acceptRequest(
@@ -53,7 +53,7 @@ class FriendRequest extends StatelessWidget {
                       },
                       background: Container(
                         padding: EdgeInsets.all(15),
-                        color: Colors.greenAccent,
+                        color: Colors.green,
                         alignment: Alignment.centerLeft,
                         child: Icon(
                           Icons.check_circle_rounded,
@@ -69,43 +69,87 @@ class FriendRequest extends StatelessWidget {
                           size: 30,
                         ),
                       ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 10,
-                          horizontal: 20,
-                        ),
-                        child: Row(
-                          children: [
-                            circleImage(
-                              image: requests[index]['image_url'],
-                            ),
-                            SizedBox(
-                              width: 15,
-                            ),
-                            Text(
-                              requests[index]['username'],
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline6!
-                                  .copyWith(fontWeight: FontWeight.bold),
-                            ),
-                            Spacer(),
-                            defaultButton(
-                              width: 50,
-                              text: 'D',
-                              background: Colors.greenAccent,
-                              onPressed: () {},
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            defaultButton(
-                              width: 50,
-                              text: 'A',
-                              background: Colors.red,
-                              onPressed: () {},
-                            ),
-                          ],
+                      child: Container(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 20,
+                          ),
+                          child: Row(
+                            children: [
+                              circleImage(
+                                context: context,
+                                image: requests[index]['image_url'],
+                              ),
+                              SizedBox(
+                                width: 15,
+                              ),
+                              Text(
+                                requests[index]['username'],
+                                style: Theme.of(context).textTheme.headline4!,
+                              ),
+                              Spacer(),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(5)),
+                                ),
+                                child: IconButton(
+                                  onPressed: () {
+                                    final snackBar = SnackBar(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 20,
+                                        vertical: 10,
+                                      ),
+                                      content: Text(
+                                          'Swipe left to remove friends request'),
+                                      duration: Duration(seconds: 3),
+                                      action: SnackBarAction(
+                                        label: 'Ok',
+                                        onPressed: () {},
+                                      ),
+                                    );
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(snackBar);
+                                  },
+                                  icon: Icon(Icons.arrow_back_rounded),
+                                  iconSize: 30,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(5)),
+                                  color: Colors.green,
+                                ),
+                                child: IconButton(
+                                  onPressed: () {
+                                    final snackBar = SnackBar(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 20,
+                                        vertical: 10,
+                                      ),
+                                      content: Text(
+                                          'Swipe right to accept friends request'),
+                                      duration: Duration(seconds: 3),
+                                      action: SnackBarAction(
+                                        label: 'Ok',
+                                        onPressed: () {},
+                                      ),
+                                    );
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(snackBar);
+                                  },
+                                  icon: Icon(Icons.arrow_forward_rounded),
+                                  iconSize: 30,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );

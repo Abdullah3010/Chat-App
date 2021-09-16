@@ -15,3 +15,5 @@ class MessageSendSuccessState extends ChatStates {}
 class MessageSendErrorState extends ChatStates {}
 
 class ChangeScreenState extends ChatStates {}
+
+class GetDataState extends ChatStates {}

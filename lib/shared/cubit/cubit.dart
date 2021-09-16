@@ -25,30 +25,9 @@ class ChatAppCubit extends Cubit<ChatAppStates> {
         .then((value) {
       ME = NewUser.fromJson(value.data()!);
       ME.uId = uid;
-      FRIENDS.clear();
-      FirebaseFirestore.instance.collection('users').get().then((user) {
-        FirebaseFirestore.instance
-            .collection('users')
-            .doc('$uid')
-            .collection('friends')
-            .get()
-            .then((friend) {
-          friend.docs.forEach((friend) {
-            user.docs.forEach((user) {
-              if (user.id == friend.id) {
-                FRIENDS.add(Friends.fromJson(
-                  user.data(),
-                  user.id,
-                  friend.data()['last_message'],
-                ));
-              }
-            });
-          });
-          emit(GetDataSuccessState());
-        }).catchError((error) {
-          emit(GetDataErrorState());
-        });
-      });
+      emit(GetDataSuccessState());
+    }).catchError((error) {
+      emit(GetDataErrorState());
     });
   }
 }

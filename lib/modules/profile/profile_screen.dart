@@ -40,6 +40,7 @@ class Profile extends StatelessWidget {
                               alignment: Alignment.bottomRight,
                               children: [
                                 circleImage(
+                                  context: context,
                                   image: snapshot.data!['image_url'] ?? "",
                                   bigRadius: 83,
                                   smallRadius: 80,
@@ -57,7 +58,47 @@ class Profile extends StatelessWidget {
                                         Icons.add_photo_alternate_outlined,
                                         size: 30,
                                       ),
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        showMyDialog(
+                                          context: context,
+                                          title: 'Select image',
+                                          content:
+                                              'Do you want to select from gallery '
+                                              'or tack a new one from camera',
+                                          actions: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                defaultButton(
+                                                  text: 'Gallery',
+                                                  isUpperCase: false,
+                                                  addIcon: true,
+                                                  icon: Icons.image_outlined,
+                                                  width: 136,
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                    cubit.getImageFromGallery();
+                                                  },
+                                                ),
+                                                Spacer(),
+                                                defaultButton(
+                                                  text: 'Camera',
+                                                  isUpperCase: false,
+                                                  addIcon: true,
+                                                  icon:
+                                                      Icons.camera_alt_outlined,
+                                                  width: 136,
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                    cubit.getImageFromCamera();
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        );
+                                      },
                                     ),
                                   ),
                                 )
@@ -76,7 +117,7 @@ class Profile extends StatelessWidget {
                                   '${ME.username}',
                                   style: Theme.of(context)
                                       .textTheme
-                                      .headline5!
+                                      .headline3!
                                       .copyWith(
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -175,7 +216,7 @@ class Profile extends StatelessWidget {
                               child: Text(
                                 'Friends',
                                 textAlign: TextAlign.end,
-                                style: Theme.of(context).textTheme.headline4,
+                                style: Theme.of(context).textTheme.headline3,
                               ),
                             ),
                           ],
@@ -194,9 +235,11 @@ class Profile extends StatelessWidget {
                                     separatorBuilder: (context, index) =>
                                         Divider(),
                                     itemBuilder: (context, index) {
+                                      print(FRIENDS.length);
                                       return Row(
                                         children: [
                                           circleImage(
+                                            context: context,
                                             image: FRIENDS[index].imageUrl!,
                                           ),
                                           SizedBox(
@@ -206,10 +249,7 @@ class Profile extends StatelessWidget {
                                             FRIENDS[index].username!,
                                             style: Theme.of(context)
                                                 .textTheme
-                                                .headline6!
-                                                .copyWith(
-                                                    fontWeight:
-                                                        FontWeight.bold),
+                                                .headline4!,
                                           ),
                                           Spacer(),
                                           defaultButton(

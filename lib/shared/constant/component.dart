@@ -22,11 +22,12 @@ AppBar defaultAppBar({
     );
 
 Widget defaultFormField({
+  required BuildContext context,
   required String label,
   required TextEditingController controller,
   required FormFieldValidator<String>? validator,
   TextInputType type = TextInputType.text,
-  Widget? prefix,
+  IconData? prefix,
   Widget? suffix,
   bool isPassword = false,
   Function? onSubmit,
@@ -38,12 +39,15 @@ Widget defaultFormField({
       obscureText: isPassword,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(),
-        disabledBorder: OutlineInputBorder(),
-        enabledBorder: UnderlineInputBorder(),
-        prefixIcon: prefix,
+        prefixIcon: Icon(
+          prefix,
+          color: MediaQuery.of(context).platformBrightness == Brightness.dark
+              ? Color.fromRGBO(226, 226, 226, 1.0)
+              : Theme.of(context).primaryColor,
+        ),
         suffixIcon: suffix,
       ),
+      style: Theme.of(context).textTheme.headline5,
       validator: validator,
       onFieldSubmitted: (value) {
         if (onSubmit != null) onSubmit();
@@ -55,7 +59,7 @@ Widget defaultButton({
   String text = '',
   required Function onPressed,
   double width = double.infinity,
-  Color background = Colors.blue,
+  Color background = Colors.purple,
   Color textColor = Colors.white,
   Color iconColor = Colors.white,
   bool isUpperCase = true,
@@ -148,6 +152,7 @@ showMyDialog({
     );
 
 Widget circleImage({
+  required BuildContext context,
   required String image,
   double bigRadius = 35,
   double smallRadius = 33,
@@ -162,73 +167,15 @@ Widget circleImage({
             ),
           )
         : CircleAvatar(
-            backgroundColor: Colors.white,
+            backgroundColor:
+                MediaQuery.of(context).platformBrightness == Brightness.dark
+                    ? Theme.of(context).scaffoldBackgroundColor
+                    : Theme.of(context).scaffoldBackgroundColor,
             radius: smallRadius,
             child: Icon(
               Icons.person,
               size: bigRadius,
             ),
           ),
-  );
-}
-
-Widget userData({
-  required BuildContext context,
-  required String image,
-  required String username,
-  String lastMessage = '',
-  bool isOnline = false,
-}) {
-  return Row(
-    children: [
-      Stack(
-        alignment: Alignment.bottomRight,
-        children: [
-          circleImage(image: image),
-          if (isOnline)
-            CircleAvatar(
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-              radius: 10,
-              child: CircleAvatar(
-                backgroundColor: Colors.greenAccent,
-                radius: 7,
-              ),
-            ),
-        ],
-      ),
-      SizedBox(
-        width: 10,
-      ),
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            username,
-            style: Theme.of(context)
-                .textTheme
-                .headline6!
-                .copyWith(fontWeight: FontWeight.bold),
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 3),
-            child: Container(
-              width: 150,
-              child: Text(
-                lastMessage,
-                style: Theme.of(context).textTheme.headline6!.copyWith(
-                      fontWeight: FontWeight.w300,
-                      fontSize: 14,
-                    ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          )
-        ],
-      )
-    ],
   );
 }

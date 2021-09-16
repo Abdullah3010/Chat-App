@@ -28,6 +28,9 @@ class RegisterCubit extends Cubit<RegisterStates> {
   ];
   File? image;
   ImagePicker picker = ImagePicker();
+  String username = "";
+  String email = "";
+  String password = "";
 
   void changePasswordState() {
     isPassword = !isPassword;
@@ -44,12 +47,12 @@ class RegisterCubit extends Cubit<RegisterStates> {
     emit(ChangeFocusNodeState());
   }
 
-  void nextPage({
+  void register({
     required String username,
     required String email,
     required String password,
   }) async {
-    emit(NextPageLoadingState());
+    emit(RegisterLoadingState());
     await FirebaseAuth.instance
         .createUserWithEmailAndPassword(
       email: email,
@@ -62,18 +65,26 @@ class RegisterCubit extends Cubit<RegisterStates> {
         password: password,
         uId: value.user!.uid,
       );
+      ID = value.user!.uid;
       LocalData.putData(
         key: 'uid',
         value: value.user!.uid,
       ).then((value) {
-        emit(NextPageSuccessesState());
+        FirebaseFirestore.instance.collection('chat').get().then((value) {
+          CHATS = value.docs;
+        }).then((value) {
+          uploadImage(ID).then(
+            (value) => login(email: email, password: password),
+          );
+        });
+        emit(RegisterSuccessesState());
       }).catchError((_) {
-        emit(NextPageErrorState());
+        emit(RegisterErrorState());
       });
     }).catchError((error) {
       if (error is FirebaseAuthException) {
         errorMessageIndex = errorName(error.code);
-        emit(NextPageErrorState());
+        emit(RegisterErrorState());
       }
     });
   }
@@ -95,6 +106,8 @@ class RegisterCubit extends Cubit<RegisterStates> {
       email: email,
       password: password,
       uId: uId,
+      state: 'Online',
+      lastSeen: Timestamp.now(),
     );
   }
 
@@ -106,7 +119,6 @@ class RegisterCubit extends Cubit<RegisterStates> {
     )
         .then((value) {
       image = File(value!.path);
-      uploadImage(Uri.file(image!.path).pathSegments.last);
     }).catchError((error) {
       emit(ImageSelectionErrorState());
     });
@@ -121,17 +133,16 @@ class RegisterCubit extends Cubit<RegisterStates> {
     )
         .then((value) {
       image = File(value!.path);
-      uploadImage(Uri.file(image!.path).pathSegments.last);
     }).catchError((error) {
       emit(ImageSelectionErrorState());
     });
     emit(ImageSelectionSuccessesState());
   }
 
-  Future<void> uploadImage(String? path) async {
+  Future<void> uploadImage(String? id) async {
     await firebase_storage.FirebaseStorage.instance
         .ref()
-        .child('user_image/$path')
+        .child('user_image/$id')
         .putFile(image!)
         .then((value) {
       value.ref.getDownloadURL().then((url) {

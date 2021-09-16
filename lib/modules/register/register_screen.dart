@@ -18,44 +18,7 @@ class RegisterScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => RegisterCubit(),
       child: BlocConsumer<RegisterCubit, RegisterStates>(
-        listener: (context, state) {
-          if (state is NextPageSuccessesState) {
-            navigateAndFinish(context, PickUserImage());
-          }
-          if (state is NextPageErrorState) {
-            showMyDialog(
-              context: context,
-              title: 'Sorry',
-              content: cubit.errorMessage[cubit.errorMessageIndex],
-              actions: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    defaultButton(
-                      text: 'Ok',
-                      background: Colors.red,
-                      textColor: Colors.white,
-                      width: 80,
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                    Spacer(),
-                    if (cubit.errorMessageIndex == 2)
-                      defaultButton(
-                        text: 'Register',
-                        width: 130,
-                        onPressed: () {
-                          Navigator.pop(context);
-                          navigate(context, RegisterScreen());
-                        },
-                      ),
-                  ],
-                ),
-              ],
-            );
-          }
-        },
+        listener: (context, state) {},
         builder: (context, state) {
           cubit = RegisterCubit.get(context);
           return Center(
@@ -72,23 +35,20 @@ class RegisterScreen extends StatelessWidget {
                         'SIGN IN',
                         style: Theme.of(context)
                             .textTheme
-                            .headline4!
-                            .copyWith(color: Colors.black),
+                            .headline3!
+                            .copyWith(fontSize: 30),
                       ),
                       SizedBox(
                         height: 12,
                       ),
-                      Text(
-                        'Sign in now to get chatting with your friends.',
-                        style: Theme.of(context).textTheme.headline6!.copyWith(
-                              color: Colors.grey,
-                            ),
-                      ),
+                      Text('Sign in now to get chatting with your friends.',
+                          style: Theme.of(context).textTheme.headline6!),
                       Divider(
                         height: 50,
                         thickness: 1,
                       ),
                       defaultFormField(
+                        context: context,
                         label: 'Username',
                         type: TextInputType.text,
                         controller: usernameController,
@@ -96,9 +56,7 @@ class RegisterScreen extends StatelessWidget {
                           if (value!.isEmpty)
                             return 'Username mustn\'t be empty';
                         },
-                        prefix: Icon(
-                          Icons.person,
-                        ),
+                        prefix: Icons.person,
                         onSubmit: () {
                           cubit.changeEmailFocus();
                         },
@@ -107,15 +65,14 @@ class RegisterScreen extends StatelessWidget {
                         height: 25,
                       ),
                       defaultFormField(
+                        context: context,
                         label: 'Email',
                         type: TextInputType.emailAddress,
                         controller: emailController,
                         validator: (value) {
                           if (value!.isEmpty) return 'Email mustn\'t be empty';
                         },
-                        prefix: Icon(
-                          Icons.email_outlined,
-                        ),
+                        prefix: Icons.email_outlined,
                         focusNode: cubit.emailFocus,
                         onSubmit: () {
                           cubit.changePasswordFocus();
@@ -125,6 +82,7 @@ class RegisterScreen extends StatelessWidget {
                         height: 25,
                       ),
                       defaultFormField(
+                        context: context,
                         label: 'Password',
                         isPassword: cubit.isPassword,
                         controller: passwordController,
@@ -132,51 +90,46 @@ class RegisterScreen extends StatelessWidget {
                           if (value!.isEmpty)
                             return 'Password mustn\'t be empty';
                         },
-                        prefix: Icon(
-                          Icons.password_outlined,
-                        ),
+                        prefix: Icons.password_outlined,
                         suffix: IconButton(
                           splashRadius: 20,
-                          icon: Icon(Icons.remove_red_eye_outlined),
+                          icon: Icon(
+                            cubit.isPassword
+                                ? Icons.remove_red_eye_outlined
+                                : Icons.lock,
+                            color: MediaQuery.of(context).platformBrightness ==
+                                    Brightness.dark
+                                ? Color.fromRGBO(226, 226, 226, 1.0)
+                                : Theme.of(context).primaryColor,
+                          ),
                           onPressed: () {
                             cubit.changePasswordState();
                           },
                         ),
                         focusNode: cubit.passwordFocus,
                         onSubmit: () {
-                          if (formKey.currentState!.validate()) {
-                            cubit.nextPage(
-                              username: usernameController.text,
-                              email: emailController.text,
-                              password: passwordController.text,
-                            );
-                          }
+                          if (formKey.currentState!.validate()) {}
                         },
                       ),
                       SizedBox(
                         height: 40,
                       ),
-                      if (state is NextPageLoadingState)
-                        Padding(
-                          padding: const EdgeInsets.all(7),
-                          child: Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        ),
-                      if (state is! NextPageLoadingState)
-                        defaultButton(
-                          text: 'next',
-                          width: double.infinity,
-                          onPressed: () {
-                            if (formKey.currentState!.validate()) {
-                              cubit.nextPage(
-                                username: usernameController.text,
-                                email: emailController.text,
-                                password: passwordController.text,
-                              );
-                            }
-                          },
-                        ),
+                      defaultButton(
+                        text: 'next',
+                        width: double.infinity,
+                        onPressed: () {
+                          if (formKey.currentState!.validate()) {
+                            navigate(
+                              context,
+                              PickUserImage(
+                                usernameController.text,
+                                emailController.text,
+                                passwordController.text,
+                              ),
+                            );
+                          }
+                        },
+                      ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 20,
@@ -199,7 +152,7 @@ class RegisterScreen extends StatelessWidget {
                                     .textTheme
                                     .bodyText1!
                                     .copyWith(
-                                      color: Theme.of(context).primaryColor,
+                                      color: Colors.blue,
                                     ),
                               ),
                             ),

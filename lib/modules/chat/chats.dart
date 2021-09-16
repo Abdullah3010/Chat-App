@@ -8,6 +8,7 @@ import 'package:chat/shared/constant/loading_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 class Chats extends StatelessWidget {
   @override
@@ -15,19 +16,15 @@ class Chats extends StatelessWidget {
     ChatCubit cubit = ChatCubit();
     String? receiverId;
 
-    FRIENDS.forEach((element) {
-      print(element.username);
+    CHATS.forEach((element) {
+      print(element.id);
     });
-
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 20,
         title: Text(
           'Chats',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 24,
-          ),
+          style: Theme.of(context).textTheme.headline3,
         ),
       ),
       body: BlocProvider(
@@ -39,6 +36,7 @@ class Chats extends StatelessWidget {
           },
           builder: (context, state) {
             cubit = ChatCubit.get(context);
+
             return Padding(
               padding: EdgeInsets.only(
                 top: 20,
@@ -58,38 +56,125 @@ class Chats extends StatelessWidget {
                   return StreamBuilder(
                     stream: FirebaseFirestore.instance
                         .collection('users')
+                        .orderBy('last_seen', descending: true)
                         .snapshots(),
                     builder: (context, AsyncSnapshot<QuerySnapshot> users) {
                       if (users.hasError) return ErrorScreen();
                       if (users.connectionState == ConnectionState.waiting)
                         return LoadingScreen();
-                      cubit.getUsersState(
-                        users.data!,
-                        friends.data!,
-                      );
                       if (friends.data!.docs.isEmpty) return Center();
+                      cubit.getUsersState(users.data!, friends.data!, CHATS);
                       return ListView.separated(
                         separatorBuilder: (context, index) => Divider(),
                         itemBuilder: (context, index) {
                           return InkWell(
-                            child: userData(
-                              context: context,
-                              image: FRIENDS[index]
-                                  .imageUrl!, //friends.data!.docs[index]['image_url'],
-                              username: FRIENDS[index]
-                                  .username!, //friends.data!.docs[index]['username'],
-                              lastMessage: FRIENDS[index]
-                                  .lastMessage!, //friends.data!.docs[index]
-                              //['last_message'],
-                              isOnline: FRIENDS[index].state == 'Online',
+                            child: Row(
+                              children: [
+                                Stack(
+                                  alignment: Alignment.bottomRight,
+                                  children: [
+                                    circleImage(
+                                        context: context,
+                                        image: FRIENDS[index].imageUrl!),
+                                    if (FRIENDS[index].state == 'Online')
+                                      CircleAvatar(
+                                        backgroundColor: Theme.of(context)
+                                            .scaffoldBackgroundColor,
+                                        radius: 10,
+                                        child: CircleAvatar(
+                                          backgroundColor: Colors.greenAccent,
+                                          radius: 7,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      FRIENDS[index].username!,
+                                      style:
+                                          Theme.of(context).textTheme.headline4,
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 3),
+                                      child: Container(
+                                        width: 150,
+                                        child: Text(
+                                          FRIENDS[index].lastMessage!,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline6!,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                Spacer(),
+                                StreamBuilder(
+                                    stream: FirebaseFirestore.instance
+                                        .collection('chat')
+                                        .doc('${FRIENDS[index].chatID}')
+                                        .snapshots(),
+                                    builder: (context,
+                                        AsyncSnapshot<DocumentSnapshot>
+                                            unread) {
+                                      if (unread.connectionState ==
+                                          ConnectionState.waiting)
+                                        return Container();
+                                      if (unread
+                                              .data!['${ME.uId}' + 'unread'] !=
+                                          0)
+                                        return Padding(
+                                          padding: EdgeInsets.only(right: 8.0),
+                                          child: CircleAvatar(
+                                            backgroundColor: Colors.green,
+                                            radius: 12,
+                                            child: Text(
+                                              unread
+                                                  .data!['${ME.uId}' + 'unread']
+                                                  .toString(),
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headline6!
+                                                  .copyWith(
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: 12,
+                                                  ),
+                                            ),
+                                          ),
+                                        );
+                                      return Center();
+                                    }),
+                                Text(
+                                  getLastSeen(FRIENDS[index].lastSeen!),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headline6!
+                                      .copyWith(
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 14,
+                                      ),
+                                ),
+                              ],
                             ),
                             onTap: () {
                               receiverId = FRIENDS[index].uId!;
                               cubit.getChatId(
-                                  receiverId: FRIENDS[index].uId!,
-                                  image: FRIENDS[index].imageUrl!,
-                                  name: FRIENDS[index].username!,
-                                  online: FRIENDS[index].state == 'Online');
+                                receiverId: FRIENDS[index].uId!,
+                                image: FRIENDS[index].imageUrl!,
+                                name: FRIENDS[index].username!,
+                                online: FRIENDS[index].state == 'Online',
+                                lastseen: getLastSeen(FRIENDS[index].lastSeen!),
+                              );
                             },
                           );
                         },
@@ -104,5 +189,17 @@ class Chats extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String getLastSeen(Timestamp last) {
+    DateTime now = Timestamp.now().toDate();
+    DateTime lastSeen = last.toDate();
+
+    if (lastSeen.day == now.day)
+      return DateFormat('hh:mm a').format(lastSeen);
+    else if (lastSeen.day == now.day - 1)
+      return 'Yesterday';
+    else
+      return DateFormat('MM/dd/yy').format(lastSeen);
   }
 }

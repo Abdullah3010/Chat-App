@@ -71,24 +71,22 @@ class LoginScreen extends StatelessWidget {
                           'LOGIN',
                           style: Theme.of(context)
                               .textTheme
-                              .headline4!
-                              .copyWith(color: Colors.black),
+                              .headline3!
+                              .copyWith(fontSize: 30),
                         ),
                         SizedBox(
                           height: 12,
                         ),
                         Text(
                           'Start your chats with your friends.',
-                          style:
-                              Theme.of(context).textTheme.headline6!.copyWith(
-                                    color: Colors.grey,
-                                  ),
+                          style: Theme.of(context).textTheme.headline6!,
                         ),
                         Divider(
                           height: 50,
                           thickness: 1,
                         ),
                         defaultFormField(
+                          context: context,
                           label: 'Email',
                           type: TextInputType.emailAddress,
                           controller: emailController,
@@ -96,9 +94,7 @@ class LoginScreen extends StatelessWidget {
                             if (value!.isEmpty)
                               return 'Email mustn\'t be empty';
                           },
-                          prefix: Icon(
-                            Icons.email_outlined,
-                          ),
+                          prefix: Icons.email_outlined,
                           onSubmit: () {
                             cubit.changeFocus();
                           },
@@ -107,6 +103,7 @@ class LoginScreen extends StatelessWidget {
                           height: 25,
                         ),
                         defaultFormField(
+                          context: context,
                           label: 'Password',
                           isPassword: cubit.isPassword,
                           controller: passwordController,
@@ -114,14 +111,19 @@ class LoginScreen extends StatelessWidget {
                             if (value!.isEmpty)
                               return 'Password mustn\'t be empty';
                           },
-                          prefix: Icon(
-                            Icons.password_outlined,
-                          ),
+                          prefix: Icons.password_outlined,
                           suffix: IconButton(
                             splashRadius: 20,
-                            icon: Icon(cubit.isPassword
-                                ? Icons.remove_red_eye_outlined
-                                : Icons.lock),
+                            icon: Icon(
+                              cubit.isPassword
+                                  ? Icons.remove_red_eye_outlined
+                                  : Icons.lock,
+                              color:
+                                  MediaQuery.of(context).platformBrightness ==
+                                          Brightness.dark
+                                      ? Color.fromRGBO(226, 226, 226, 1.0)
+                                      : Theme.of(context).primaryColor,
+                            ),
                             onPressed: () {
                               cubit.changePasswordState();
                             },
@@ -181,7 +183,7 @@ class LoginScreen extends StatelessWidget {
                                       .textTheme
                                       .bodyText1!
                                       .copyWith(
-                                        color: Theme.of(context).primaryColor,
+                                        color: Colors.blue,
                                       ),
                                 ),
                               ),

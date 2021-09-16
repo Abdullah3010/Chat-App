@@ -7,6 +7,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PickUserImage extends StatelessWidget {
+  final String username;
+  final String email;
+  final String password;
+
+  PickUserImage(
+    this.username,
+    this.email,
+    this.password,
+  );
+
   @override
   Widget build(BuildContext context) {
     late RegisterCubit cubit;
@@ -114,7 +124,7 @@ class PickUserImage extends StatelessWidget {
                                           isUpperCase: false,
                                           addIcon: true,
                                           icon: Icons.image_outlined,
-                                          width: 150,
+                                          width: 136,
                                           onPressed: () {
                                             Navigator.pop(context);
                                             cubit.getImageFromGallery();
@@ -126,7 +136,7 @@ class PickUserImage extends StatelessWidget {
                                           isUpperCase: false,
                                           addIcon: true,
                                           icon: Icons.camera_alt_outlined,
-                                          width: 150,
+                                          width: 136,
                                           onPressed: () {
                                             Navigator.pop(context);
                                             cubit.getImageFromCamera();
@@ -155,9 +165,10 @@ class PickUserImage extends StatelessWidget {
                               text: 'sign in',
                               width: double.infinity,
                               onPressed: () {
-                                cubit.login(
-                                  email: ME.email!,
-                                  password: ME.password!,
+                                cubit.register(
+                                  username: username,
+                                  email: email,
+                                  password: password,
                                 );
                               },
                             ),

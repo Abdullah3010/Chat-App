@@ -3,6 +3,7 @@ import 'package:chat/models/user.dart';
 import 'package:chat/shared/constant/component.dart';
 import 'package:chat/shared/constant/constants.dart';
 import 'package:chat/shared/network/local/local-db.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -41,15 +42,23 @@ class SettingsScreen extends StatelessWidget {
                         width: 100,
                         background: Colors.red,
                         onPressed: () {
-                          FirebaseAuth.instance.signOut().then((value) {
-                            LocalData.removeData(key: 'uid');
-                            ID = '';
-                            ME = NewUser();
-                            FRIENDS.clear();
-                            Navigator.of(context).pop();
-                            navigateAndFinish(context, Login());
+                          print(44);
+                          FirebaseFirestore.instance
+                              .collection('users')
+                              .doc('$ID')
+                              .update({
+                            'state': 'Offline',
+                            'last_seen': Timestamp.now(),
+                          }).then((value) {
+                            FirebaseAuth.instance.signOut().then((value) {
+                              LocalData.removeData(key: 'uid');
+                              ID = '';
+                              ME = NewUser();
+                              FRIENDS.clear();
+                              Navigator.of(context).pop();
+                              navigateAndFinish(context, Login());
+                            });
                           }).catchError((error) {});
-                          print(11);
                         },
                       ),
                       Spacer(),
@@ -70,7 +79,11 @@ class SettingsScreen extends StatelessWidget {
         ],
       ),
       body: Center(
-        child: Text('dfsf'),
+        child: Text(
+          'Unfinished yet.\n'
+          'Created by : Abdullah Mohamed',
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }

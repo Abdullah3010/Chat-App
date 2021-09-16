@@ -53,10 +53,15 @@ class LoginCubit extends Cubit<LoginStates> {
           .then((value) {
         ME = NewUser.fromJson(value.data()!);
         ME.uId = id;
+        ID = id;
         LocalData.putData(
           key: 'uid',
           value: id,
         ).then((value) {
+          FirebaseFirestore.instance
+              .collection('users')
+              .doc('$ID')
+              .update({'state': 'Online'});
           emit(LoginSuccessesState());
         }).catchError((_) {
           emit(LoginErrorState());

@@ -7,6 +7,7 @@ import 'package:chat/modules/friends/add_friend_screen.dart';
 import 'package:chat/modules/profile/profile_screen.dart';
 import 'package:chat/modules/settings/settings_screen.dart';
 import 'package:chat/shared/constant/constants.dart';
+import 'package:chat/shared/cubit/states.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,27 +20,27 @@ class ChatCubit extends Cubit<ChatStates> {
   String chatId = '';
   String imageUrl = '';
   String username = '';
+  String lastSeen = '';
   bool isOnline = false;
+  FirebaseFirestore fire = FirebaseFirestore.instance;
 
   void getChatId(
       {required String receiverId,
       required String image,
       required String name,
-      required bool online}) {
-    FirebaseFirestore.instance.collection('chat').get().then((value) {
-      value.docs.forEach((element) {
-        if (element.id.contains(receiverId) && element.id.contains(ME.uId!)) {
-          chatId = element.id;
-          imageUrl = image;
-          username = name;
-          isOnline = online;
-        }
-        print(element.id);
-      });
-      emit(ChatSuccessState());
-    }).catchError((error) {
-      emit(ChatErrorState());
+      required bool online,
+      required String lastseen}) {
+    CHATS.forEach((element) {
+      if (element.id.contains(receiverId) && element.id.contains(ME.uId!)) {
+        chatId = element.id;
+        imageUrl = image;
+        username = name;
+        isOnline = online;
+        lastSeen = lastseen;
+      }
+      print(element.id);
     });
+    emit(ChatSuccessState());
   }
 
   void sendMessage({
@@ -48,6 +49,13 @@ class ChatCubit extends Cubit<ChatStates> {
     String image = '',
     required String to,
   }) {
+    bool? isInside;
+    int unread = 0;
+    fire.collection('chat').doc('$chatId').get().then((value) {
+      isInside = value.data()!['$to' + 'L'] == 'inside';
+      unread = value.data()!['$to' + 'unread'];
+    });
+
     Message m = Message(
         message: message,
         from: ME.uId,
@@ -56,24 +64,31 @@ class ChatCubit extends Cubit<ChatStates> {
         image: image,
         time: Timestamp.now());
     emit(MessageSendLoadState());
-    FirebaseFirestore.instance
+    fire
         .collection('chat')
         .doc('$chatId')
         .collection('messages')
         .add(m.toMap())
         .then((value) {
-      FirebaseFirestore.instance
+      fire
           .collection('users')
           .doc('${ME.uId}')
           .collection('friends')
           .doc('$to')
           .update({'last_message': message}).then((value) {
-        FirebaseFirestore.instance
+        fire
             .collection('users')
             .doc('$to')
             .collection('friends')
             .doc('${ME.uId}')
             .update({'last_message': message}).then((value) {
+          if (!isInside!) {
+            fire
+                .collection('chat')
+                .doc('$chatId')
+                .update({'$to' + 'unread': unread + 1});
+            print("dfsdfsdf");
+          }
           emit(MessageSendSuccessState());
         }).catchError((error) {
           emit(MessageSendErrorState());
@@ -94,25 +109,41 @@ class ChatCubit extends Cubit<ChatStates> {
     emit(ChangeScreenState());
   }
 
-  void getUsersState(
+  Future<void> getUsersState(
     QuerySnapshot<Object?> users,
     QuerySnapshot<Object?> friends,
-  ) {
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> chats,
+  ) async {
     FRIENDS.clear();
     friends.docs.forEach((friend) {
       users.docs.forEach((user) {
         if (user.id == friend.id) {
-          FRIENDS.add(
-            Friends(
-              username: user['username'],
-              uId: user.id,
-              state: user['state'],
-              imageUrl: user['image_url'],
-              lastMessage: friend['last_message'],
-            ),
-          );
+          print(friend.id);
+          CHATS.forEach((element) {
+            if (element.id.contains(user.id) && element.id.contains(ME.uId!)) {
+              FRIENDS.add(
+                Friends(
+                    username: user['username'],
+                    uId: user.id,
+                    state: user['state'],
+                    imageUrl: user['image_url'],
+                    lastMessage: friend['last_message'],
+                    lastSeen: user['last_seen'],
+                    chatID: element.id),
+              );
+            }
+          });
         }
       });
     });
+    FRIENDS.sort((a, b) => b.lastSeen!.compareTo(a.lastSeen!));
+  }
+
+  void setTyping() {
+    fire.collection('chat').doc('$chatId').update({'${ME.uId}': 'typing...'});
+  }
+
+  void removeTyping() {
+    fire.collection('chat').doc('$chatId').update({'${ME.uId}': ''});
   }
 }

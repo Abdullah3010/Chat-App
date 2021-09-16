@@ -6,11 +6,11 @@ class ChangePasswordState extends RegisterStates {}
 
 class ChangeFocusNodeState extends RegisterStates {}
 
-class NextPageLoadingState extends RegisterStates {}
+class RegisterLoadingState extends RegisterStates {}
 
-class NextPageSuccessesState extends RegisterStates {}
+class RegisterSuccessesState extends RegisterStates {}
 
-class NextPageErrorState extends RegisterStates {}
+class RegisterErrorState extends RegisterStates {}
 
 class ImageSelectionLoadingState extends RegisterStates {}
 
