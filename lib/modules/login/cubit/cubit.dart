@@ -71,7 +71,6 @@ class LoginCubit extends Cubit<LoginStates> {
       });
     }).catchError((error) {
       errorMessageIndex = errorName(error.toString());
-      print(errorMessageIndex);
       emit(LoginErrorState());
     });
   }

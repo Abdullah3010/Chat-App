@@ -154,7 +154,8 @@ class PickUserImage extends StatelessWidget {
                       SizedBox(
                         height: 60,
                       ),
-                      (state is LoginLoadingState)
+                      (state is LoginLoadingState ||
+                              state is RegisterLoadingState)
                           ? Padding(
                               padding: const EdgeInsets.all(7),
                               child: Center(

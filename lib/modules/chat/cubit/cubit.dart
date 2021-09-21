@@ -1,16 +1,19 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:chat/models/message.dart';
 import 'package:chat/models/user.dart';
 import 'package:chat/modules/chat/chats.dart';
 import 'package:chat/modules/chat/cubit/states.dart';
-import 'package:chat/modules/friends/add_friend_screen.dart';
+import 'package:chat/modules/friends/friends.dart';
 import 'package:chat/modules/profile/profile_screen.dart';
 import 'package:chat/modules/settings/settings_screen.dart';
 import 'package:chat/shared/constant/constants.dart';
-import 'package:chat/shared/cubit/states.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ChatCubit extends Cubit<ChatStates> {
   ChatCubit() : super(ChatInitialState());
@@ -38,7 +41,6 @@ class ChatCubit extends Cubit<ChatStates> {
         isOnline = online;
         lastSeen = lastseen;
       }
-      print(element.id);
     });
     emit(ChatSuccessState());
   }
@@ -87,7 +89,6 @@ class ChatCubit extends Cubit<ChatStates> {
                 .collection('chat')
                 .doc('$chatId')
                 .update({'$to' + 'unread': unread + 1});
-            print("dfsdfsdf");
           }
           emit(MessageSendSuccessState());
         }).catchError((error) {
@@ -102,7 +103,7 @@ class ChatCubit extends Cubit<ChatStates> {
   }
 
   int currentIndex = 1;
-  List<Widget> screens = [AddFriend(), Chats(), Profile(), SettingsScreen()];
+  List<Widget> screens = [MyFriends(), Chats(), Profile(), SettingsScreen()];
 
   void changeScreen(int index) {
     currentIndex = index;
@@ -118,7 +119,6 @@ class ChatCubit extends Cubit<ChatStates> {
     friends.docs.forEach((friend) {
       users.docs.forEach((user) {
         if (user.id == friend.id) {
-          print(friend.id);
           CHATS.forEach((element) {
             if (element.id.contains(user.id) && element.id.contains(ME.uId!)) {
               FRIENDS.add(
@@ -145,5 +145,48 @@ class ChatCubit extends Cubit<ChatStates> {
 
   void removeTyping() {
     fire.collection('chat').doc('$chatId').update({'${ME.uId}': ''});
+  }
+
+  File? image;
+  ImagePicker picker = ImagePicker();
+
+  Future<void> getImageFromGallery() async {
+    emit(ImageSelectionLoadingState());
+    final pickedFile = await picker
+        .getImage(
+      source: ImageSource.gallery,
+    )
+        .then((value) {
+      image = File(value!.path);
+    }).catchError((error) {
+      emit(ImageSelectionErrorState());
+    });
+    emit(ImageSelectionSuccessesState());
+  }
+
+  Future<void> getImageFromCamera() async {
+    emit(ImageSelectionLoadingState());
+    final pickedFile = await picker
+        .getImage(
+      source: ImageSource.camera,
+    )
+        .then((value) {
+      image = File(value!.path);
+    }).catchError((error) {
+      emit(ImageSelectionErrorState());
+    });
+    emit(ImageSelectionSuccessesState());
+  }
+
+  Future<void> uploadImage(String? id) async {
+    await firebase_storage.FirebaseStorage.instance
+        .ref()
+        .child('user_image/$id')
+        .putFile(image!)
+        .then((value) {
+      value.ref.getDownloadURL().then((url) {
+        ME.imageUrl = url;
+      });
+    });
   }
 }

@@ -33,9 +33,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       CHATS = value.docs;
     });
     if (ID.compareTo('null') != 0) {
-      setOnline().then((value) => print('online')).catchError((error) {
-        print(error);
-      });
+      setOnline();
     }
   }
 
@@ -87,25 +85,35 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 ),
                 scaffoldBackgroundColor: Colors.white,
                 textTheme: TextTheme(
+                  headline1: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 35,
+                  ),
+                  headline2: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 30,
+                  ),
                   headline3: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                     fontSize: 24,
                   ),
-                  headline6: TextStyle(
-                    fontWeight: FontWeight.w300,
+                  headline4: TextStyle(
+                    fontWeight: FontWeight.bold,
                     color: Colors.black,
-                    fontSize: 14,
+                    fontSize: 20,
                   ),
                   headline5: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                     fontSize: 18,
                   ),
-                  headline4: TextStyle(
-                    fontWeight: FontWeight.bold,
+                  headline6: TextStyle(
+                    fontWeight: FontWeight.w300,
                     color: Colors.black,
-                    fontSize: 20,
+                    fontSize: 14,
                   ),
                   bodyText1: TextStyle(
                     fontSize: 16,
@@ -130,11 +138,23 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                   color: Color.fromRGBO(40, 40, 40, 1.0),
                   titleSpacing: 20,
                   elevation: 0,
-                  iconTheme: IconThemeData(color: Colors.black),
-                  actionsIconTheme: IconThemeData(color: Colors.black),
+                  iconTheme:
+                      IconThemeData(color: Color.fromRGBO(226, 226, 226, 1.0)),
+                  actionsIconTheme:
+                      IconThemeData(color: Color.fromRGBO(226, 226, 226, 1.0)),
                 ),
                 scaffoldBackgroundColor: Color.fromRGBO(40, 40, 40, 1.0),
                 textTheme: TextTheme(
+                  headline1: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromRGBO(226, 226, 226, 1.0),
+                    fontSize: 35,
+                  ),
+                  headline2: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromRGBO(226, 226, 226, 1.0),
+                    fontSize: 30,
+                  ),
                   headline3: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Color.fromRGBO(226, 226, 226, 1.0),

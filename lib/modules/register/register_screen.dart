@@ -52,6 +52,7 @@ class RegisterScreen extends StatelessWidget {
                         label: 'Username',
                         type: TextInputType.text,
                         controller: usernameController,
+                        maxLength: 16,
                         validator: (value) {
                           if (value!.isEmpty)
                             return 'Username mustn\'t be empty';

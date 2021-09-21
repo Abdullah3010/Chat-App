@@ -1,3 +1,4 @@
+import 'package:chat/models/user.dart';
 import 'package:chat/modules/friends/cubit/cubit.dart';
 import 'package:chat/modules/friends/cubit/states.dart';
 import 'package:chat/modules/friends/friend_request_screen.dart';
@@ -10,12 +11,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddFriend extends StatelessWidget {
+  // final List<Unfriends> unfriendUsers;
+  // AddFriend(this.unfriendUsers);
+
   @override
   Widget build(BuildContext context) {
-    AddFriendCubit cubit;
-    String color = "";
+    FriendsCubit cubit;
     return BlocProvider(
-      create: (context) => AddFriendCubit(),
+      create: (context) => FriendsCubit(),
       child: StreamBuilder(
         stream: FirebaseFirestore.instance.collection('users').snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> users) {
@@ -44,21 +47,18 @@ class AddFriend extends StatelessWidget {
                   if (friendRequest.connectionState == ConnectionState.waiting)
                     return LoadingScreen();
 
-                  return BlocConsumer<AddFriendCubit, AddFriendsStats>(
+                  return BlocConsumer<FriendsCubit, FriendsStats>(
                     listener: (context, state) {},
                     builder: (context, state) {
-                      cubit = AddFriendCubit.get(context);
-
-                      print(state.toString());
+                      cubit = FriendsCubit.get(context);
 
                       if (state is AddFriendsInitialStats) {
-                        print(1);
                         cubit.getUnfriendUsers(users.data!.docs,
                             sentRequest.data!.docs, friendRequest.data!.docs);
 
                         cubit.changeColor(friendRequest.data!.docs.isEmpty);
                       }
-                      color = cubit.color;
+
                       return Scaffold(
                         appBar: AppBar(
                           titleSpacing: 20,
@@ -66,39 +66,22 @@ class AddFriend extends StatelessWidget {
                             'Add Friend',
                             style: Theme.of(context).textTheme.headline3,
                           ),
-                          actions: [
-                            Padding(
-                              padding: EdgeInsets.only(right: 8.0),
-                              child: IconButton(
-                                icon: IconTheme(
-                                  data: Theme.of(context).iconTheme.copyWith(
-                                        color: color.compareTo('red') == 0
-                                            ? Colors.red
-                                            : null,
-                                      ),
-                                  child: Icon(
-                                    color.compareTo('red') == 0
-                                        ? Icons.notifications_active_rounded
-                                        : Icons.notifications,
-                                  ),
-                                ),
-                                onPressed: () {
-                                  navigate(context, FriendRequest());
-                                },
-                              ),
-                            ),
-                          ],
                         ),
                         body: Padding(
                           padding: const EdgeInsets.all(20),
                           child: ListView.separated(
                             physics: BouncingScrollPhysics(),
-                            separatorBuilder: (context, index) => Divider(
-                              height: 35,
-                              thickness: 2,
-                              indent: 20,
-                              endIndent: 20,
-                            ),
+                            separatorBuilder: (context, index) {
+                              if (cubit.unfriendUsers[index].uId!.compareTo(
+                                      'n8pMjy0PdBN94apW97QeDRS6VIZ2') ==
+                                  0) return Center();
+                              return Divider(
+                                height: 35,
+                                thickness: 2,
+                                indent: 20,
+                                endIndent: 20,
+                              );
+                            },
                             itemBuilder: (context, index) {
                               if (cubit.unfriendUsers[index].uId!.compareTo(
                                       'n8pMjy0PdBN94apW97QeDRS6VIZ2') ==
@@ -112,15 +95,20 @@ class AddFriend extends StatelessWidget {
                                   SizedBox(
                                     width: 15,
                                   ),
-                                  Text(
-                                    cubit.unfriendUsers[index].username!,
-                                    style:
-                                        Theme.of(context).textTheme.headline4!,
+                                  Container(
+                                    width: 180,
+                                    child: Text(
+                                      cubit.unfriendUsers[index].username!,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headline4!,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                   Spacer(),
                                   if ((state is SendRequestLoadingStats &&
                                           cubit.sentIndex.contains(index)) ||
-                                      (state is RemoveFriendLoadingStats &&
+                                      (state is RemoveFriendRequestLoadingStats &&
                                           cubit.sentIndex.contains(index)))
                                     Container(
                                       width: 80,
@@ -155,12 +143,11 @@ class AddFriend extends StatelessWidget {
                                                   width: 100,
                                                   background: Colors.red,
                                                   onPressed: () {
-                                                    cubit.removeFriend(
-                                                        cubit
-                                                            .unfriendUsers[
-                                                                index]
-                                                            .uId,
-                                                        index);
+                                                    cubit.removeFriendRequest(
+                                                      cubit.unfriendUsers[index]
+                                                          .uId,
+                                                      index,
+                                                    );
                                                     Navigator.pop(context);
                                                   },
                                                 ),
@@ -181,7 +168,8 @@ class AddFriend extends StatelessWidget {
                                     ),
                                   if (!cubit.sentIndex.contains(index) ||
                                       (!cubit.sentIndex.contains(index) &&
-                                          state is RemoveFriendSuccessStats))
+                                          state
+                                              is RemoveFriendRequestSuccessStats))
                                     defaultButton(
                                       width: 80,
                                       addIcon: true,

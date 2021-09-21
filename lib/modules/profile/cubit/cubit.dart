@@ -14,48 +14,6 @@ class ProfileCubit extends Cubit<ProfileStats> {
 
   String chatId = '';
 
-  void removeFriend(String? id, int index) {
-    emit(RemoveFriendLoadingStats());
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc('${ME.uId}')
-        .collection('friends')
-        .doc('$id')
-        .delete()
-        .then((value) {
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc('$id')
-          .collection('friends')
-          .doc('${ME.uId}')
-          .delete()
-          .then((value) {
-        FirebaseFirestore.instance.collection('chat').get().then((value) {
-          value.docs.forEach((element) {
-            if (element.id.contains(id!) && element.id.contains(ME.uId!)) {
-              chatId = element.id;
-            }
-          });
-          FirebaseFirestore.instance
-              .collection('chat')
-              .doc('$chatId')
-              .delete()
-              .catchError((error) {
-            emit(RemoveFriendErrorStats());
-          });
-        }).catchError((error) {
-          emit(RemoveFriendErrorStats());
-        });
-      }).catchError((error) {
-        emit(RemoveFriendErrorStats());
-      });
-      FRIENDS.removeAt(index);
-      emit(RemoveFriendSuccessStats());
-    }).catchError((error) {
-      emit(RemoveFriendErrorStats());
-    });
-  }
-
   void changeName(String newName) {
     emit(ChangeNameLoadingStats());
     FirebaseFirestore.instance

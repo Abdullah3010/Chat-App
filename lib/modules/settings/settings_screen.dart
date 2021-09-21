@@ -42,7 +42,6 @@ class SettingsScreen extends StatelessWidget {
                         width: 100,
                         background: Colors.red,
                         onPressed: () {
-                          print(44);
                           FirebaseFirestore.instance
                               .collection('users')
                               .doc('$ID')

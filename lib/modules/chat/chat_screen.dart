@@ -17,7 +17,6 @@ class ChatScreen extends StatelessWidget {
         listener: (context, state) {
           if (state is ChatSuccessState)
             navigate(context, UserChat(receiverId!, cubit));
-          print(receiverId);
         },
         builder: (context, state) {
           cubit = ChatCubit.get(context);
@@ -27,9 +26,9 @@ class ChatScreen extends StatelessWidget {
               items: [
                 BottomNavigationBarItem(
                   icon: Icon(
-                    Icons.person_add_alt_1,
+                    Icons.group_rounded,
                   ),
-                  label: 'Add Friend',
+                  label: 'Friends',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(

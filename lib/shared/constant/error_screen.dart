@@ -15,7 +15,7 @@ class ErrorScreen extends StatelessWidget {
               backgroundColor: Colors.deepOrange,
               child: CircleAvatar(
                 radius: 100,
-                backgroundColor: Colors.white,
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 child: Icon(
                   Icons.error_rounded,
                   color: Colors.red,

@@ -77,7 +77,6 @@ class RegisterCubit extends Cubit<RegisterStates> {
             (value) => login(email: email, password: password),
           );
         });
-        emit(RegisterSuccessesState());
       }).catchError((_) {
         emit(RegisterErrorState());
       });
@@ -147,11 +146,7 @@ class RegisterCubit extends Cubit<RegisterStates> {
         .then((value) {
       value.ref.getDownloadURL().then((url) {
         ME.imageUrl = url;
-      }).catchError((error) {
-        emit(ImageSelectionErrorState());
       });
-    }).catchError((error) {
-      emit(ImageSelectionErrorState());
     });
   }
 

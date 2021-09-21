@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'image_view_screen.dart';
+
 AppBar defaultAppBar({
   required String text,
   required BuildContext? context,
@@ -32,12 +34,15 @@ Widget defaultFormField({
   bool isPassword = false,
   Function? onSubmit,
   FocusNode? focusNode,
+  int? maxLength,
 }) =>
     TextFormField(
       controller: controller,
       keyboardType: type,
       obscureText: isPassword,
+      cursorHeight: 25,
       decoration: InputDecoration(
+        counter: Offstage(),
         labelText: label,
         prefixIcon: Icon(
           prefix,
@@ -53,6 +58,7 @@ Widget defaultFormField({
         if (onSubmit != null) onSubmit();
       },
       focusNode: focusNode,
+      maxLength: maxLength,
     );
 
 Widget defaultButton({
@@ -157,25 +163,30 @@ Widget circleImage({
   double bigRadius = 35,
   double smallRadius = 33,
 }) {
-  return CircleAvatar(
-    radius: bigRadius,
-    child: image != ""
-        ? CircleAvatar(
-            radius: smallRadius,
-            backgroundImage: NetworkImage(
-              image,
+  return InkWell(
+    child: CircleAvatar(
+      radius: bigRadius,
+      child: image != ""
+          ? CircleAvatar(
+              radius: smallRadius,
+              backgroundImage: NetworkImage(
+                image,
+              ),
+            )
+          : CircleAvatar(
+              backgroundColor:
+                  MediaQuery.of(context).platformBrightness == Brightness.dark
+                      ? Theme.of(context).scaffoldBackgroundColor
+                      : Theme.of(context).scaffoldBackgroundColor,
+              radius: smallRadius,
+              child: Icon(
+                Icons.person,
+                size: bigRadius,
+              ),
             ),
-          )
-        : CircleAvatar(
-            backgroundColor:
-                MediaQuery.of(context).platformBrightness == Brightness.dark
-                    ? Theme.of(context).scaffoldBackgroundColor
-                    : Theme.of(context).scaffoldBackgroundColor,
-            radius: smallRadius,
-            child: Icon(
-              Icons.person,
-              size: bigRadius,
-            ),
-          ),
+    ),
+    onTap: () {
+      navigate(context, ImageViewScreen(url: image));
+    },
   );
 }

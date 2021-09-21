@@ -1,9 +1,11 @@
 import 'package:chat/modules/chat/cubit/cubit.dart';
 import 'package:chat/modules/chat/cubit/states.dart';
 import 'package:chat/modules/chat/user_chat.dart';
+import 'package:chat/modules/friends/add_friend_screen.dart';
 import 'package:chat/shared/constant/component.dart';
 import 'package:chat/shared/constant/constants.dart';
 import 'package:chat/shared/constant/error_screen.dart';
+import 'package:chat/shared/constant/image_view_screen.dart';
 import 'package:chat/shared/constant/loading_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -16,9 +18,6 @@ class Chats extends StatelessWidget {
     ChatCubit cubit = ChatCubit();
     String? receiverId;
 
-    CHATS.forEach((element) {
-      print(element.id);
-    });
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 20,
@@ -62,7 +61,34 @@ class Chats extends StatelessWidget {
                       if (users.hasError) return ErrorScreen();
                       if (users.connectionState == ConnectionState.waiting)
                         return LoadingScreen();
-                      if (friends.data!.docs.isEmpty) return Center();
+                      if (friends.data!.docs.isEmpty)
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'You have no friends lets add some.',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline5!
+                                    .copyWith(
+                                      fontWeight: FontWeight.w300,
+                                    ),
+                              ),
+                              SizedBox(
+                                height: 24,
+                              ),
+                              defaultButton(
+                                text: 'Add Friends',
+                                isUpperCase: false,
+                                width: 250,
+                                onPressed: () {
+                                  navigate(context, AddFriend());
+                                },
+                              ),
+                            ],
+                          ),
+                        );
                       cubit.getUsersState(users.data!, friends.data!, CHATS);
                       return ListView.separated(
                         separatorBuilder: (context, index) => Divider(),

@@ -1,25 +1,31 @@
-class AddFriendsStats {}
+class FriendsStats {}
 
-class AddFriendsInitialStats extends AddFriendsStats {}
+class AddFriendsInitialStats extends FriendsStats {}
 
-class SendRequestLoadingStats extends AddFriendsStats {}
+class SendRequestLoadingStats extends FriendsStats {}
 
-class SendRequestSuccessStats extends AddFriendsStats {}
+class SendRequestSuccessStats extends FriendsStats {}
 
-class SendRequestErrorStats extends AddFriendsStats {}
+class SendRequestErrorStats extends FriendsStats {}
 
-class RemoveFriendLoadingStats extends AddFriendsStats {}
+class RemoveFriendRequestLoadingStats extends FriendsStats {}
 
-class RemoveFriendSuccessStats extends AddFriendsStats {}
+class RemoveFriendRequestSuccessStats extends FriendsStats {}
 
-class RemoveFriendErrorStats extends AddFriendsStats {}
+class RemoveFriendRequestErrorStats extends FriendsStats {}
 
-class AcceptFriendLoadingStats extends AddFriendsStats {}
+class RemoveFriendLoadingStats extends FriendsStats {}
 
-class AcceptFriendSuccessStats extends AddFriendsStats {}
+class RemoveFriendSuccessStats extends FriendsStats {}
 
-class AcceptFriendErrorStats extends AddFriendsStats {}
+class RemoveFriendErrorStats extends FriendsStats {}
 
-class ColorChangeStats extends AddFriendsStats {}
+class AcceptFriendLoadingStats extends FriendsStats {}
 
-class GetUnfriendsStats extends AddFriendsStats {}
+class AcceptFriendErrorStats extends FriendsStats {}
+
+class AcceptFriendSuccessStats extends FriendsStats {}
+
+class ColorChangeStats extends FriendsStats {}
+
+class GetUnfriendsStats extends FriendsStats {}

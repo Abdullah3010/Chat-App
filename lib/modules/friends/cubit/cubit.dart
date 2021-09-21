@@ -1,15 +1,17 @@
 import 'package:chat/models/friend_request.dart';
 import 'package:chat/models/user.dart';
+import 'package:chat/modules/chat/cubit/cubit.dart';
+import 'package:chat/modules/chat/cubit/states.dart';
 import 'package:chat/modules/friends/cubit/states.dart';
 import 'package:chat/shared/constant/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class AddFriendCubit extends Cubit<AddFriendsStats> {
-  AddFriendCubit() : super(AddFriendsInitialStats());
+class FriendsCubit extends Cubit<FriendsStats> {
+  FriendsCubit() : super(AddFriendsInitialStats());
 
-  static AddFriendCubit get(context) => BlocProvider.of(context);
+  static FriendsCubit get(context) => BlocProvider.of(context);
 
   List<Unfriends> unfriendUsers = [];
   List<String> sentRequest = [];
@@ -30,9 +32,6 @@ class AddFriendCubit extends Cubit<AddFriendsStats> {
     request.forEach((element) {
       requests.add(element.id);
     });
-
-    print(sentRequest);
-    print(requests);
 
     users.forEach((user) {
       int check = 0;
@@ -99,8 +98,8 @@ class AddFriendCubit extends Cubit<AddFriendsStats> {
     });
   }
 
-  void removeFriend(String? id, int index) {
-    emit(RemoveFriendLoadingStats());
+  void removeFriendRequest(String? id, int index) {
+    emit(RemoveFriendRequestLoadingStats());
     FirebaseFirestore.instance
         .collection('users')
         .doc('${ME.uId}')
@@ -115,16 +114,17 @@ class AddFriendCubit extends Cubit<AddFriendsStats> {
           .doc('${ME.uId}')
           .delete()
           .catchError((error) {
-        emit(RemoveFriendErrorStats());
+        emit(RemoveFriendRequestErrorStats());
       });
       sentIndex.remove(index);
-      emit(RemoveFriendSuccessStats());
+      emit(RemoveFriendRequestSuccessStats());
     }).catchError((error) {
-      emit(RemoveFriendErrorStats());
+      emit(RemoveFriendRequestErrorStats());
     });
   }
 
-  void acceptRequest(String uid, String username, String image) {
+  void acceptRequest(
+      String uid, String username, String image, BuildContext context) {
     emit(AcceptFriendLoadingStats());
     FirebaseFirestore.instance
         .collection('users')
@@ -171,7 +171,9 @@ class AddFriendCubit extends Cubit<AddFriendsStats> {
               '${ME.uId}' + 'unread': 0,
               '$uid' + 'unread': 0,
             }).then((value) {
-              emit(AcceptFriendSuccessStats());
+              ChatCubit.get(context).emit(ChatInitialState());
+              FriendsCubit.get(context).emit(AcceptFriendSuccessStats());
+              emit(AddFriendsInitialStats());
             }).catchError((error) {
               emit(AcceptFriendErrorStats());
             });
@@ -187,6 +189,17 @@ class AddFriendCubit extends Cubit<AddFriendsStats> {
     }).catchError((error) {
       emit(AcceptFriendErrorStats());
     });
+    FRIENDS.add(
+      Friends(
+        chatID: '${ME.uId}' + '$uid',
+        username: username,
+        imageUrl: image,
+        lastSeen: Timestamp.now(),
+        lastMessage: "",
+        state: 'Online',
+        uId: uid,
+      ),
+    );
   }
 
   void cancelRequest(String uid) {
@@ -220,5 +233,50 @@ class AddFriendCubit extends Cubit<AddFriendsStats> {
     else
       color = "";
     emit(ColorChangeStats());
+  }
+
+  List<int> removedFriendsIndex = [];
+
+  void removeFriend(String? id, String? chatId, int index) {
+    emit(RemoveFriendLoadingStats());
+    removedFriendsIndex.add(index);
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc('${ME.uId}')
+        .collection('friends')
+        .doc('$id')
+        .delete()
+        .then((value) {
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc('$id')
+          .collection('friends')
+          .doc('${ME.uId}')
+          .delete()
+          .then((value) {
+        FirebaseFirestore.instance.collection('chat').get().then((value) {
+          value.docs.forEach((element) {
+            if (element.id.contains(id!) && element.id.contains(ME.uId!)) {
+              chatId = element.id;
+            }
+          });
+          FirebaseFirestore.instance
+              .collection('chat')
+              .doc('$chatId')
+              .delete()
+              .catchError((error) {
+            emit(RemoveFriendErrorStats());
+          });
+        }).catchError((error) {
+          emit(RemoveFriendErrorStats());
+        });
+      }).catchError((error) {
+        emit(RemoveFriendErrorStats());
+      });
+      FRIENDS.removeAt(index);
+      emit(RemoveFriendSuccessStats());
+    }).catchError((error) {
+      emit(RemoveFriendErrorStats());
+    });
   }
 }
